@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulasi Form Lamaran Kerja - Senior Fullstack & AI Engineer</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #4f46e5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 720px;
+      width: 100%;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.02);
+      border: 1px solid var(--border);
+      padding: 32px;
+    }
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+    .badge {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #4338ca;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 22px; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+    .company { font-size: 14px; color: var(--muted); }
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #334155;
+      margin: 24px 0 14px 0;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    label { font-size: 13px; font-weight: 600; color: #475569; }
+    .req { color: #ef4444; }
+    input, select, textarea {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #1e293b;
+      background: #f8fafc;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+    .radio-group { display: flex; gap: 20px; align-items: center; margin-top: 4px; }
+    .radio-label { display: flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: normal; cursor: pointer; }
+    .radio-label input { width: auto; margin: 0; }
+    .btn-submit {
+      background: var(--primary);
+      color: #ffffff;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 16px;
+      transition: all 0.2s;
+    }
+    .btn-submit:hover { background: #4338ca; }
+    .demo-info {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="demo-info">
+      💡 <strong>Halaman Simulasi Pengujian:</strong> Pasang ekstensi Chrome, lalu klik tombol melayang <strong>[⚡ Auto-Fill AI]</strong> di pojok kanan bawah layar untuk menguji pengisian otomatis.
+    </div>
+
+    <div class="header">
+      <span class="badge">Lowongan Pekerjaan Aktif</span>
+      <h1>Senior Fullstack & AI Automation Specialist</h1>
+      <p class="company">PT Nusantara AI Solutions • Jakarta, Indonesia (Remote/Hybrid)</p>
+    </div>
+
+    <form id="job-application-form" onsubmit="event.preventDefault(); alert('🎉 Form berhasil disubmit!');">
+      <div class="section-title">1. Informasi Pribadi</div>
+      <div class="grid">
+        <div class="form-group">
+          <label for="applicant_name">Nama Lengkap <span class="req">*</span></label>
+          <input type="text" id="applicant_name" name="full_name" placeholder="Nama lengkap sesuai KTP" required>
+        </div>
+        <div class="form-group">
+          <label for="applicant_email">Alamat Email <span class="req">*</span></label>
+          <input type="email" id="applicant_email" name="email_address" placeholder="email@domain.com" required>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="form-group">
+          <label for="applicant_phone">Nomor WhatsApp / HP <span class="req">*</span></label>
+          <input type="tel" id="applicant_phone" name="phone_number" placeholder="+62..." required>
+        </div>
+        <div class="form-group">
+          <label for="applicant_city">Kota Domisili Saat Ini <span class="req">*</span></label>
+          <input type="text" id="applicant_city" name="current_city" placeholder="misal: Jakarta" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="applicant_address">Alamat Tempat Tinggal</label>
+        <input type="text" id="applicant_address" name="residential_address" placeholder="Jalan, RT/RW, Kecamatan...">
+      </div>
+
+      <div class="section-title">2. Portofolio & Keahlian</div>
+      <div class="grid">
+        <div class="form-group">
+          <label for="linkedin_profile">LinkedIn URL</label>
+          <input type="url" id="linkedin_profile" name="linkedin_url" placeholder="https://linkedin.com/in/...">
+        </div>
+        <div class="form-group">
+          <label for="github_profile">GitHub / Portfolio Website URL</label>
+          <input type="url" id="github_profile" name="portfolio_url" placeholder="https://github.com/...">
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="form-group">
+          <label for="years_experience">Berapa tahun total pengalaman kerja relevan Anda?</label>
+          <input type="number" id="years_experience" name="total_years_exp" placeholder="Tahun">
+        </div>
+        <div class="form-group">
+          <label for="work_arrangement">Preferensi Cara Kerja</label>
+          <select id="work_arrangement" name="work_model">
+            <option value="">-- Pilih Preferensi --</option>
+            <option value="Remote">100% Remote (Work from Anywhere)</option>
+            <option value="Hybrid">Hybrid (Kantor + Remote)</option>
+            <option value="Onsite">On-site (WFO Jakarta)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="tech_stack_summary">Keahlian Utama / Tech Stack yang Dikuasai</label>
+        <input type="text" id="tech_stack_summary" name="skills_list" placeholder="misal: React, Next.js, Node.js, Python, PostgreSQL...">
+      </div>
+
+      <div class="section-title">3. Ekspektasi & Ketersediaan</div>
+      <div class="grid">
+        <div class="form-group">
+          <label for="expected_salary">Ekspektasi Gaji Bersih per Bulan (IDR) <span class="req">*</span></label>
+          <input type="text" id="expected_salary" name="expected_compensation" placeholder="15.000.000" required>
+        </div>
+        <div class="form-group">
+          <label for="notice_period">Kapan Anda bisa mulai bergabung? (Notice Period)</label>
+          <input type="text" id="notice_period" name="availability_notice" placeholder="misal: Segera / 1 Bulan">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Apakah Anda bersedia bekerja secara remote?</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="willing_remote" value="Yes"> Ya, Sangat Bersedia
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="willing_remote" value="No"> Tidak
+          </label>
+        </div>
+      </div>
+
+      <div class="section-title">4. Pertanyaan Screening & Esai Singkat</div>
+      <div class="form-group">
+        <label for="essay_why_join">Mengapa Anda tertarik untuk melamar posisi Senior Fullstack & AI Specialist di perusahaan kami?</label>
+        <textarea id="essay_why_join" name="motivation_letter" rows="3" placeholder="Jelaskan motivasi dan relevansi pengalaman Anda..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="essay_experience_summary">Ceritakan secara singkat pengalaman proyek AI atau Web Automation yang paling menantang yang pernah Anda bangun.</label>
+        <textarea id="essay_experience_summary" name="project_showcase" rows="3" placeholder="Ceritakan latar belakang, arsitektur, dan dampak proyek..."></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit">Kirim Lamaran Kerja</button>
+    </form>
+  </div>
+</body>
+</html>

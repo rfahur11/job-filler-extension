@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Job Form Filler - Complete Database</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>AI Job Form Filler</h1>
+          <span class="badge">Comprehensive Database</span>
+        </div>
+      </div>
+      <button id="btn-quick-fill-tab" class="btn-action-accent" title="Trigger Auto-Fill di Tab Aktif">
+        ⚡ Isi Form Ini
+      </button>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="tab-personal">👤 Profil & Kontak</button>
+      <button class="tab-btn" data-tab="tab-career">💼 Karir & Riwayat</button>
+      <button class="tab-btn" data-tab="tab-skills-pref">🛠️ Skills & Gaji</button>
+      <button class="tab-btn" data-tab="tab-qa">📝 Bank Jawaban</button>
+      <button class="tab-btn" data-tab="tab-ai-tools">⚙️ AI & Backup</button>
+    </nav>
+
+    <!-- TAB 1: DATA PRIBADI, KONTAK & LEGALITAS -->
+    <div id="tab-personal" class="tab-content active">
+      <section class="form-section">
+        <!-- CV Upload Dropzone Box -->
+        <div class="cv-dropzone" id="cv-dropzone">
+          <div class="dropzone-icon">📄</div>
+          <div class="dropzone-text">
+            <h3>Upload CV (PDF / Text) untuk Isi Otomatis</h3>
+            <p>AI akan otomatis membaca & mengisi seluruh database profil Anda dalam 1.5 detik!</p>
+          </div>
+          <label class="btn-upload-cv">
+            Pilih File CV (PDF)
+            <input type="file" id="input-cv-file" accept=".pdf,.txt,.md" style="display:none;">
+          </label>
+        </div>
+
+        <div id="cv-upload-loading" class="upload-loading-banner hidden">
+          <div class="spinner"></div>
+          <span id="cv-loading-text">🤖 AI sedang membaca & mengekstrak seluruh data CV...</span>
+        </div>
+
+        <h2 class="section-title">Identitas Diri & Legalitas</h2>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="p-fullName">Nama Lengkap (Sesuai KTP)</label>
+            <input type="text" id="p-fullName" placeholder="Fahrur Rozi">
+          </div>
+          <div class="input-group">
+            <label for="p-nickname">Nama Panggilan (First/Nickname)</label>
+            <input type="text" id="p-nickname" placeholder="Fahrur">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="p-idCardNumber">NIK / No. KTP (ID Card)</label>
+            <input type="text" id="p-idCardNumber" placeholder="3301203010020001">
+          </div>
+          <div class="input-group">
+            <label for="p-religion">Agama (Religion)</label>
+            <input type="text" id="p-religion" placeholder="Islam">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="p-email">Alamat Email Aktif</label>
+            <input type="email" id="p-email" placeholder="rfahrur6045@gmail.com">
+          </div>
+          <div class="input-group">
+            <label for="p-phone">No. Telepon / WhatsApp</label>
+            <input type="tel" id="p-phone" placeholder="+62895380146029">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="p-birthDate">Tanggal Lahir</label>
+            <input type="text" id="p-birthDate" placeholder="YYYY-MM-DD (misal: 2002-10-30)">
+          </div>
+          <div class="input-group">
+            <label for="p-gender">Jenis Kelamin</label>
+            <input type="text" id="p-gender" placeholder="Laki-laki / Male">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="p-nationality">Kewarganegaraan</label>
+            <input type="text" id="p-nationality" placeholder="Indonesia">
+          </div>
+          <div class="input-group">
+            <label for="p-maritalStatus">Status Pernikahan</label>
+            <input type="text" id="p-maritalStatus" placeholder="Belum Menikah / Single">
+          </div>
+        </div>
+
+        <h2 class="section-title">Alamat & Domisili</h2>
+        <div class="input-group">
+          <label for="p-address">Alamat Lengkap</label>
+          <input type="text" id="p-address" placeholder="Central Java, Indonesia...">
+        </div>
+        <div class="grid-3">
+          <div class="input-group">
+            <label for="p-city">Kota / Kabupaten</label>
+            <input type="text" id="p-city" placeholder="Cilacap">
+          </div>
+          <div class="input-group">
+            <label for="p-province">Provinsi</label>
+            <input type="text" id="p-province" placeholder="Jawa Tengah">
+          </div>
+          <div class="input-group">
+            <label for="p-postalCode">Kode Pos</label>
+            <input type="text" id="p-postalCode" placeholder="53282">
+          </div>
+        </div>
+
+        <h2 class="section-title">Tautan Profil & Portofolio</h2>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="p-linkedin">LinkedIn URL</label>
+            <input type="url" id="p-linkedin" placeholder="https://linkedin.com/in/fahrur-rozi-k-336b04164">
+          </div>
+          <div class="input-group">
+            <label for="p-github">GitHub URL</label>
+            <input type="url" id="p-github" placeholder="https://github.com/rfahur11">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="p-portfolio">Portofolio URL</label>
+            <input type="url" id="p-portfolio" placeholder="https://weboz.my.id">
+          </div>
+          <div class="input-group">
+            <label for="p-website">Personal Website / Blog</label>
+            <input type="url" id="p-website" placeholder="https://weboz.my.id">
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 2: KARIR, PENDIDIKAN & SERTIFIKASI -->
+    <div id="tab-career" class="tab-content">
+      <section class="form-section">
+        <h2 class="section-title">Ringkasan Profesional (Bio / Summary)</h2>
+        <div class="input-group">
+          <textarea id="p-summary" rows="3" placeholder="Tuliskan bio profesional Anda yang merangkum peran dan keahlian utama..."></textarea>
+        </div>
+
+        <h2 class="section-title">Pengalaman Kerja Terkini / Utama</h2>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="exp-role">Jabatan / Posisi</label>
+            <input type="text" id="exp-role" placeholder="Fullstack Developer">
+          </div>
+          <div class="input-group">
+            <label for="exp-company">Nama Perusahaan</label>
+            <input type="text" id="exp-company" placeholder="PT Bharata International Pharmaceutical">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="exp-period">Periode Kerja</label>
+            <input type="text" id="exp-period" placeholder="2024-01 - Present">
+          </div>
+          <div class="input-group">
+            <label for="exp-location">Lokasi / Tipe Kerja</label>
+            <input type="text" id="exp-location" placeholder="Central Java (Full-time)">
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="exp-desc">Tanggung Jawab & Pencapaian Kerja</label>
+          <textarea id="exp-desc" rows="3" placeholder="Optimasi Shopee API rate-limit, pipeline order-ingestion asinkronus, modul ERP Java & React, Computer Vision skin analysis..."></textarea>
+        </div>
+
+        <h2 class="section-title">Pendidikan Terakhir</h2>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="edu-degree">Gelar & Jenjang</label>
+            <input type="text" id="edu-degree" placeholder="B.Ed. in Educational Systems & Information Technology">
+          </div>
+          <div class="input-group">
+            <label for="edu-institution">Universitas / Institusi</label>
+            <input type="text" id="edu-institution" placeholder="Universitas Pendidikan Indonesia (UPI)">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="edu-gpa">IPK / GPA</label>
+            <input type="text" id="edu-gpa" placeholder="3.58 / 4.00">
+          </div>
+          <div class="input-group">
+            <label for="edu-year">Tahun Kelulusan</label>
+            <input type="text" id="edu-year" placeholder="2024">
+          </div>
+        </div>
+
+        <h2 class="section-title">Sertifikasi & Lisensi</h2>
+        <div class="input-group">
+          <label for="p-certifications">Daftar Sertifikasi & Lisensi</label>
+          <textarea id="p-certifications" rows="2" placeholder="Dev Certified for Machine Learning with TensorFlow (DCML), MTCNA MikroTik, Google IT Automation with Python, PTESOL"></textarea>
+        </div>
+
+        <h2 class="section-title">Proyek Unggulan</h2>
+        <div class="input-group">
+          <label for="p-projects">Proyek Portofolio Utama</label>
+          <textarea id="p-projects" rows="2" placeholder="LarisAI (Smart POS & Stock Prediction), Enterprise ERP, Task Management Go Microservice, Weboz Agency ML..."></textarea>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 3: SKILLS, GAJI & PREFERENSI KERJA -->
+    <div id="tab-skills-pref" class="tab-content">
+      <section class="form-section">
+        <h2 class="section-title">Keahlian & Kemampuan Bahasa</h2>
+        <div class="input-group">
+          <label for="p-skillsTech">Keahlian Teknis (Technical Skills)</label>
+          <textarea id="p-skillsTech" rows="2" placeholder="Go (Golang), TypeScript, JavaScript, Python, Java, SQL, Next.js, React.js, Fiber, Electron, MongoDB, PostgreSQL, TensorFlow, PyTorch, YOLO, Docker, REST APIs, Webhooks"></textarea>
+        </div>
+        <div class="input-group">
+          <label for="p-skillsSoft">Soft Skills</label>
+          <input type="text" id="p-skillsSoft" placeholder="Problem Solving, Analytical Thinking, System Architecture Design, High-throughput Optimization, Collaboration">
+        </div>
+        <div class="input-group">
+          <label for="p-skillsLanguages">Bahasa yang Dikuasai</label>
+          <input type="text" id="p-skillsLanguages" placeholder="Bahasa Indonesia (Native), English (Professional Working / PTESOL Certified)">
+        </div>
+
+        <h2 class="section-title">Kompensasi & Gaji</h2>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="p-expectedSalary">Ekspektasi Gaji (IDR/Bulan)</label>
+            <input type="text" id="p-expectedSalary" placeholder="12000000">
+          </div>
+          <div class="input-group">
+            <label for="p-currentSalary">Gaji Terakhir (IDR/Bulan)</label>
+            <input type="text" id="p-currentSalary" placeholder="10000000">
+          </div>
+        </div>
+
+        <h2 class="section-title">Preferensi & Ketersediaan</h2>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="p-yearsExp">Total Pengalaman (Tahun)</label>
+            <input type="text" id="p-yearsExp" placeholder="2.5">
+          </div>
+          <div class="input-group">
+            <label for="p-noticePeriod">Notice Period / Ketersediaan</label>
+            <input type="text" id="p-noticePeriod" placeholder="1 Month / Segera">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="p-remotePref">Preferensi Cara Kerja</label>
+            <input type="text" id="p-remotePref" placeholder="Remote (WFH) / Hybrid / On-site">
+          </div>
+          <div class="input-group">
+            <label for="p-relocate">Kesediaan Relokasi</label>
+            <input type="text" id="p-relocate" placeholder="Yes (Open to Relocation)">
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="p-workAuth">Izin Kerja / Status Legal</label>
+          <input type="text" id="p-workAuth" placeholder="Warga Negara Indonesia (WNI - Tanpa Perlu Sponsor Visa)">
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 4: BANK JAWABAN SCREENING (Q&A) -->
+    <div id="tab-qa" class="tab-content">
+      <section class="form-section">
+        <h2 class="section-title">Template Jawaban Screening (Metode STAR)</h2>
+        <p class="section-desc">AI akan menggunakan jawaban ini dan menggabungkannya dengan Job Description di halaman loker secara otomatis.</p>
+
+        <div class="input-group">
+          <label for="qa-whyJoin">Mengapa tertarik bergabung dengan perusahaan kami? (Why join us?)</label>
+          <textarea id="qa-whyJoin" rows="3" placeholder="Motivasi utama Anda bergabung..."></textarea>
+        </div>
+
+        <div class="input-group">
+          <label for="qa-strengths">Kelebihan Utama Anda (Greatest Strengths)</label>
+          <textarea id="qa-strengths" rows="2" placeholder="Keahlian analitis, backend Go/Next.js, optimasi API..."></textarea>
+        </div>
+
+        <div class="input-group">
+          <label for="qa-weaknesses">Kelemahan & Cara Mengatasinya (Weaknesses)</label>
+          <textarea id="qa-weaknesses" rows="2" placeholder="Perfeksionis performa diimbangi MVP terukur..."></textarea>
+        </div>
+
+        <div class="input-group">
+          <label for="qa-project">Proyek Paling Menantang yang Pernah Anda Bangun</label>
+          <textarea id="qa-project" rows="3" placeholder="Penyelesaian rate-limit Shopee API dan pemulihan order sync 100%..."></textarea>
+        </div>
+
+        <div class="input-group">
+          <label for="qa-whyLeave">Alasan Mencari Pekerjaan Baru (Why leave last job?)</label>
+          <textarea id="qa-whyLeave" rows="2" placeholder="Mencari tantangan karir dan skala proyek yang lebih besar..."></textarea>
+        </div>
+
+        <div class="input-group">
+          <label for="qa-leadership">Pengalaman Memimpin / Mentoring (Leadership)</label>
+          <textarea id="qa-leadership" rows="2" placeholder="Memimpin standardisasi kontrak API antar tim vendor..."></textarea>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB 5: AI CONFIG & BACKUP TOOLS -->
+    <div id="tab-ai-tools" class="tab-content">
+      <section class="form-section">
+        <h2 class="section-title">Konfigurasi Model AI</h2>
+        <div class="input-group">
+          <label for="ai-provider">Provider AI</label>
+          <select id="ai-provider">
+            <option value="gemini">Google Gemini Flash Lite (Ultra-Fast ~700ms ⭐)</option>
+            <option value="ollama">Ollama (Local di PC - 100% Offline)</option>
+            <option value="openai_compatible">OpenAI / OpenRouter / Groq</option>
+          </select>
+        </div>
+
+        <div class="input-group" id="group-apiKey">
+          <div class="label-row">
+            <label for="ai-apiKey">Gemini API Key</label>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="link-small">Dapatkan API Key Gratis ↗</a>
+          </div>
+          <div class="input-password-wrapper">
+            <input type="password" id="ai-apiKey" placeholder="AIzaSy...">
+            <button type="button" id="btn-toggle-key" class="btn-icon">👁️</button>
+          </div>
+          <small class="hint">API Key tersimpan aman secara lokal di browser Anda.</small>
+        </div>
+
+        <div class="input-group" id="group-model">
+          <label for="ai-model">Model AI</label>
+          <input type="text" id="ai-model" placeholder="gemini-3.1-flash-lite">
+          <small class="hint">Model Aktif: <code>gemini-3.1-flash-lite</code> (Ultra-fast + Deep Reasoning)</small>
+        </div>
+
+        <div class="input-group hidden" id="group-endpoint">
+          <label for="ai-endpoint">Custom API Endpoint URL</label>
+          <input type="text" id="ai-endpoint" placeholder="http://localhost:11434">
+        </div>
+
+        <div class="ai-test-box">
+          <button id="btn-test-ai" class="btn-secondary">🧪 Test Koneksi AI</button>
+          <span id="ai-test-status" class="status-indicator">Belum diuji</span>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 16px;">Backup & Restore Database</h2>
+        <div class="tools-grid">
+          <button id="btn-export-cv" class="btn-secondary">📥 Export Database (JSON)</button>
+          <label class="btn-secondary file-upload-btn">
+            📤 Import Database (JSON)
+            <input type="file" id="input-import-cv" accept=".json" style="display:none;">
+          </label>
+          <button id="btn-reset-cv" class="btn-danger">🔄 Reset ke Template Default</button>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 16px;">Halaman Uji Coba Formulir</h2>
+        <button id="btn-open-demo" class="btn-action-primary" style="width: 100%;">
+          🚀 Buka Test Form Demo Page
+        </button>
+      </section>
+    </div>
+
+    <!-- Footer Action Bar -->
+    <footer class="app-footer">
+      <span id="save-status" class="save-status">💾 Tersimpan</span>
+      <button id="btn-save-all" class="btn-primary">Simpan Semua Perubahan</button>
+    </footer>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

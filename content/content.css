@@ -1,0 +1,123 @@
+/* Universal AI Form Filler - Floating Action Widget & Visual Feedback */
+
+#ai-job-filler-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  user-select: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ai-filler-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.5), 0 8px 10px -6px rgba(79, 70, 229, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+}
+
+.ai-filler-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 30px -4px rgba(79, 70, 229, 0.65), 0 10px 12px -5px rgba(79, 70, 229, 0.4);
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #1d4ed8 100%);
+}
+
+.ai-filler-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.ai-filler-btn svg {
+  width: 16px;
+  height: 16px;
+  animation: ai-pulse 2s infinite ease-in-out;
+}
+
+.ai-filler-btn.loading {
+  pointer-events: none;
+  opacity: 0.9;
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+}
+
+.ai-filler-btn.loading svg {
+  animation: ai-spin 1s linear infinite;
+}
+
+/* Toast Notification */
+#ai-filler-toast {
+  position: fixed;
+  bottom: 85px;
+  right: 24px;
+  z-index: 9999999;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(12px) scale(0.95);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  max-width: 340px;
+}
+
+#ai-filler-toast.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+#ai-filler-toast.success {
+  border-left: 4px solid #10b981;
+}
+
+#ai-filler-toast.error {
+  border-left: 4px solid #ef4444;
+}
+
+/* Highlight Green Glow on Auto-Filled Form Elements */
+.ai-field-filled-highlight {
+  animation: ai-fill-glow 2.5s ease-out forwards !important;
+  border-color: #10b981 !important;
+  outline: 2px solid rgba(16, 185, 129, 0.4) !important;
+  background-color: rgba(16, 185, 129, 0.04) !important;
+}
+
+@keyframes ai-fill-glow {
+  0% {
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  }
+  100% {
+    box-shadow: none;
+    outline: none !important;
+  }
+}
+
+@keyframes ai-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(255,255,255,0.6)); }
+  50% { transform: scale(1.15); filter: drop-shadow(0 0 6px rgba(255,255,255,0.9)); }
+}
+
+@keyframes ai-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

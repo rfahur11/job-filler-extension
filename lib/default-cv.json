@@ -1,0 +1,187 @@
+{
+  "personal": {
+    "fullName": "Fahrur Rozi",
+    "nickname": "Fahrur",
+    "email": "rfahrur6045@gmail.com",
+    "phone": "+62895380146029",
+    "whatsapp": "+62895380146029",
+    "birthDate": "2002-10-30",
+    "gender": "Laki-laki / Male",
+    "religion": "Islam",
+    "maritalStatus": "Belum Menikah / Single",
+    "nationality": "Indonesia",
+    "idCardNumber": "3301203010020001",
+    "address": "Central Java, Indonesia",
+    "city": "Cilacap",
+    "province": "Jawa Tengah",
+    "postalCode": "53282",
+    "country": "Indonesia"
+  },
+  "links": {
+    "linkedin": "https://www.linkedin.com/in/fahrur-rozi-k-336b04164",
+    "github": "https://github.com/rfahur11",
+    "portfolio": "https://weboz.my.id",
+    "website": "https://weboz.my.id",
+    "blog": "https://weboz.my.id/blog",
+    "twitter": "https://x.com/fahrur_dev"
+  },
+  "summary": "Fullstack & Backend Integration Engineer dengan ~2.5 tahun pengalaman dalam merancang sistem POS bertenaga AI, pipeline data ERP yang resilien, layanan backend microservice berkinerja tinggi (Go/Fiber), dan aplikasi cross-platform desktop/web (Electron, Next.js). Memiliki rekam jejak terbukti dalam menyelesaikan kendala kritis rate-limiting API, membangun pipeline asinkronus multi-marketplace, dan mengintegrasikan model Applied Machine Learning/Computer Vision ke dalam sistem perangkat lunak enterprise.",
+  "experience": [
+    {
+      "role": "Fullstack Developer",
+      "company": "PT Bharata International Pharmaceutical",
+      "employmentType": "Full-time",
+      "location": "Central Java, Indonesia",
+      "startDate": "2024-01",
+      "endDate": "Present",
+      "isCurrent": true,
+      "description": "• API Rate-Limit Optimization: Menyelesaikan kegagalan kritis Shopee Open API yang menyebabkan rate-limiting, memulihkan stabilitas sinkronisasi order 100% di bawah kondisi active vendor code freeze.\n• Idempotent Ingestion Pipeline: Merancang pipeline order-ingestion asinkronus untuk multi-marketplace dengan retry backoff dan pemulihan dead-letter queue.\n• API Governance & SLA: Menetapkan standar kontrak API—termasuk request versioning, taksonomi error, dan automated test gates lintas tim vendor.\n• Internal Financial & ERP Modules: Membangun modul finansial enterprise menggunakan Java & React, mengotomatisasi pelacakan cash flow dan efisiensi administrasi.\n• Applied ML & Computer Vision Deployment: Melatih dan mendeploy model Computer Vision untuk analisis kulit otomatis pada alur kerja R&D produk.",
+      "technologies": "Go (Fiber), Java, React.js, Next.js, MongoDB, REST APIs, Webhooks, Python, Computer Vision",
+      "achievements": "Memulihkan 100% stabilitas sinkronisasi order multi-marketplace dan mengotomatisasi analisis R&D menggunakan Computer Vision."
+    },
+    {
+      "role": "IT Systems Specialist",
+      "company": "Bantarsari Public Health Center",
+      "employmentType": "Contract",
+      "location": "Central Java, Indonesia",
+      "startDate": "2022-07",
+      "endDate": "2022-10",
+      "isCurrent": false,
+      "description": "• Clinical Workflow Automation: Mengembangkan sistem Excel VBA yang meningkatkan produktivitas staf medis hingga 30%.\n• Modernisasi Portal Publik: Memodernisasi portal publik layanan kesehatan yang meningkatkan keterlibatan masyarakat sebesar 20%.",
+      "technologies": "Excel VBA, Web Portal, Workflow Automation",
+      "achievements": "Meningkatkan produktivitas staf sebesar 30% dan engagement publik sebesar 20%."
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.Ed. in Educational Systems & Information Technology",
+      "major": "Teknologi Informasi & Sistem Pendidikan",
+      "institution": "Universitas Pendidikan Indonesia (UPI)",
+      "location": "Bandung / Jawa Barat, Indonesia",
+      "startYear": "2020",
+      "graduationYear": "2024",
+      "gpa": "3.58 / 4.00",
+      "honors": "Lulusan Sarjana Pendidikan Sistem & Teknologi Informasi dengan IPK 3.58"
+    },
+    {
+      "degree": "Machine Learning Graduate",
+      "major": "Machine Learning & Applied AI Path",
+      "institution": "Bangkit Academy (Google, Tokopedia, GoTo, Traveloka)",
+      "location": "Indonesia (MSIB Kemendikbud)",
+      "startYear": "2024",
+      "graduationYear": "2024",
+      "gpa": "Score 85 / 100",
+      "honors": "Graduate of Bangkit Academy 2024 - Machine Learning Cohort"
+    },
+    {
+      "degree": "Fullstack Web & MLOps Graduate",
+      "major": "Fullstack Web Development & MLOps",
+      "institution": "Binar Academy & Dicoding Academy",
+      "location": "Indonesia (Kampus Merdeka Batch 4)",
+      "startYear": "2023",
+      "graduationYear": "2023",
+      "gpa": "Score 87 / 100",
+      "honors": "Top Graduate Kampus Merdeka Batch 4 Fullstack Track"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Dev Certified for Machine Learning with TensorFlow (DCML)",
+      "issuer": "TensorFlow / Google Developers",
+      "issueDate": "2024",
+      "expirationDate": "Lifetime",
+      "credentialId": "DCML-TF-2024",
+      "credentialUrl": ""
+    },
+    {
+      "name": "MTCNA (MikroTik Certified Network Associate)",
+      "issuer": "MikroTik",
+      "issueDate": "2023",
+      "expirationDate": "Lifetime",
+      "credentialId": "MTCNA-NET-882",
+      "credentialUrl": ""
+    },
+    {
+      "name": "Google IT Automation with Python Professional Certificate",
+      "issuer": "Google",
+      "issueDate": "2023",
+      "expirationDate": "Lifetime",
+      "credentialId": "GOOGLE-IT-PY-992",
+      "credentialUrl": ""
+    },
+    {
+      "name": "PTESOL (Proficiency Test of English for Speakers of Other Languages)",
+      "issuer": "PTESOL International",
+      "issueDate": "2024",
+      "expirationDate": "Lifetime",
+      "credentialId": "PTESOL-ENG-2024",
+      "credentialUrl": ""
+    }
+  ],
+  "projects": [
+    {
+      "name": "LarisAI – Smart POS & AI Stock Prediction Platform",
+      "role": "Lead Architect & Developer",
+      "url": "https://weboz.my.id",
+      "github": "https://github.com/rfahur11",
+      "technologies": "Electron, Next.js, React, TypeScript, Go (Fiber), Python (AI/ML), MongoDB / SQL",
+      "description": "Merancang sistem Point of Sale (POS) Smart Cross-Platform (Web & Electron Desktop App) untuk memodernisasi alur kasir dan tata kelola stok UMKM. Mengintegrasikan model prediktif AI/ML untuk peramalan stok berdasarkan analitik penjualan historis dan rekomendasi kampanye pemasaran cerdas otomatis."
+    },
+    {
+      "name": "Enterprise Resource Planning (ERP) & Data Integration",
+      "role": "Fullstack Integration Engineer",
+      "url": "https://weboz.my.id",
+      "github": "https://github.com/rfahur11",
+      "technologies": "Go (Fiber), Next.js, React, Java, MongoDB, Webhooks, REST API",
+      "description": "Mengembangkan modul ERP internal yang mengotomatisasi manajemen inventaris, pelaporan keuangan multi-mata uang, dan gateway Webhook berkinerja tinggi."
+    },
+    {
+      "name": "Task Management System (Go Microservice Backend)",
+      "role": "Backend Engineer",
+      "url": "https://github.com/rfahur11",
+      "github": "https://github.com/rfahur11",
+      "technologies": "Go (Fiber), MongoDB, JWT Auth, RBAC Architecture",
+      "description": "Membangun microservice Go berkinerja tinggi dengan autentikasi multi-role RBAC dan mekanisme soft-archival untuk isolasi data multi-tenant yang aman."
+    },
+    {
+      "name": "Weboz Agency Platform & Caraka Edge ML",
+      "role": "Founder & ML Engineer",
+      "url": "https://weboz.my.id",
+      "github": "https://github.com/rfahur11/weboz",
+      "technologies": "TypeScript, Next.js, Python, TensorFlow/Keras, TFLite, Android",
+      "description": "Mendirikan platform digital agency Next.js (weboz.my.id) dan melatih model CNN dengan akurasi ~93% yang dikuantisasi ke format TFLite untuk eksekusi edge berlatensi rendah di Android."
+    }
+  ],
+  "skills": {
+    "technical": "Go (Golang), TypeScript, JavaScript, Python, Java, SQL, HTML/CSS, Next.js, React.js, Fiber, Electron, Node.js, Express, MongoDB, PostgreSQL, MySQL, TensorFlow, PyTorch, YOLO, Computer Vision, MLOps, REST APIs, Webhooks, Git, Docker, Excel VBA, MikroTik Network",
+    "soft": "Problem Solving, Analytical Thinking, System Architecture Design, High-throughput Backend Optimization, Cross-functional Team Collaboration, Agile/Scrum",
+    "languages": [
+      { "language": "Bahasa Indonesia", "proficiency": "Native / Penutur Asli" },
+      { "language": "English", "proficiency": "Professional Working Proficiency (PTESOL Certified)" }
+    ]
+  },
+  "preferences": {
+    "expectedSalary": "12000000",
+    "expectedSalaryMax": "18000000",
+    "currentSalary": "10000000",
+    "currency": "IDR",
+    "salaryNegotiable": "Yes / Terbuka untuk Negosiasi",
+    "noticePeriod": "1 Month / 30 Hari (Negotiable)",
+    "earliestStartDate": "Segera / Immediately",
+    "employmentType": "Full-time (Karyawan Tetap) / Contract",
+    "remotePreference": "Remote (Work from Anywhere), Hybrid, atau On-site",
+    "willingToRelocate": "Yes (Open to Relocation / Jakarta / Luar Kota / Luar Negeri)",
+    "yearsOfExperience": "2.5",
+    "workAuthorization": "Warga Negara Indonesia (WNI - Tanpa Perlu Sponsor Visa)",
+    "hasDrivingLicense": "SIM A & SIM C"
+  },
+  "customAnswers": {
+    "whyJoinUs": "Dengan pengalaman lebih dari 2.5 tahun dalam membangun backend microservice Go/Fiber berkinerja tinggi, arsitektur ERP/POS modern, dan penerapan Applied AI/ML (Computer Vision & predictive stock forecasting), saya sangat antusias untuk berkontribusi langsung dalam meningkatkan skalabilitas, keandalan sistem, dan efisiensi produk di perusahaan Anda.",
+    "strengths": "Keahlian kuat dalam penyelesaian masalah arsitektur kritis (seperti optimasi rate-limiting Shopee API & pipeline asinkronus), penguasaan mendalam ekosistem Go, Next.js, React, serta kemampuan mendeploy solusi AI/ML aplikatif ke lingkungan produksi enterprise.",
+    "weaknesses": "Terkadang saya sangat teliti pada detail performa dan refactoring kode. Namun, saya mengimbanginya dengan selalu memprioritaskan business value, menerapkan pendekatan MVP iteratif yang terukur, dan disiplin pada sprint timeline.",
+    "challengingProject": "Di PT Bharata International Pharmaceutical, saya menyelesaikan kegagalan kritis rate-limiting Shopee Open API saat kondisi vendor code freeze. Saya merancang ulang pipeline order-ingestion asinkronus dengan retry backoff dan dead-letter queue, berhasil memulihkan stabilitas sinkronisasi 100% tanpa kehilangan data transaksi.",
+    "whyLeaveLastJob": "Ingin memperluas kontribusi teknis pada tantangan rekayasa perangkat lunak skala enterprise yang lebih masif, pengembangan produk AI terapan, dan ekosistem backend berkinerja tinggi.",
+    "leadershipExperience": "Berpengalaman memimpin standardisasi kontrak API antar tim vendor, mengelola arsitektur teknis proyek Weboz, serta berkolaborasi lintas divisi dari tim R&D produk hingga tim finansial.",
+    "careerGoals": "Dalam 2-3 tahun ke depan, saya berkomitmen untuk berkembang menjadi Senior Backend & Applied AI Engineer yang memimpin perancangan sistem terdistribusi skala besar serta mengintegrasikan teknologi AI generatif dan predictive ke dalam operasional bisnis inti."
+  }
+}
