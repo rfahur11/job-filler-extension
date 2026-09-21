@@ -53,10 +53,13 @@ job-filler-extension/
 
 1. **📄 1-Click Upload & Parse CV (PDF / TXT)**:
    - Pengguna cukup drag & drop berkas CV PDF ke popup. Gemini Multimodal mengekstrak nama, kontak, ringkasan, keahlian, pengalaman, pendidikan, dan ekspektasi gaji dalam 2–3 detik.
-2. **🌐 Universal Semantic Matching**:
-   - Mampu mengenali kolom input di berbagai situs lowongan kerja (*Jobstreet, Glints, LinkedIn, Kalibrr, Greenhouse, Lever, Google Forms*) tanpa memerlukan CSS selector khusus per situs.
-3. **✍️ Auto-Essay Screening Answer Generator**:
-   - Menghasilkan draf jawaban esai profesional secara otomatis (alasan melamar, pengalaman relevan, notice period) yang disesuaikan dengan posisi lowongan kerja yang sedang dibuka.
+2. **🌐 Universal Semantic Matching & Google Forms Compatibility**:
+   - Mampu mengenali kolom input di berbagai situs lowongan kerja (*Jobstreet, Glints, LinkedIn, Kalibrr, Greenhouse, Lever, Google Forms*).
+   - Dilengkapi *Anti-Generic Filter* (mengabaikan teks *"Jawaban Anda"* / *"Your answer"* di Google Forms), parsing multi-ID `aria-labelledby`, dan penelusuran kartu pertanyaan (`[role="listitem"]`, `[role="heading"]`).
+3. **✍️ Bilingual (ID & EN) Auto-Essay & Operational Screening Generator**:
+   - Deteksi bahasa adaptif per-kolom: Pertanyaan berbahasa Inggris dijawab 100% dalam Bahasa Inggris profesional berstandar ATS (STAR Method), sedangkan pertanyaan berbahasa Indonesia dijawab dalam Bahasa Indonesia formal.
+   - Presisi tinggi pada pertanyaan ketersediaan: Mencegah kekeliruan pemetaan antara *"When is the earliest date you can start?"* (dijawab *"Immediately / As soon as possible"*) dengan total tahun pengalaman (*yearsOfExperience*).
+   - Menghasilkan jawaban kesiapan kerja operasional (ketersediaan shift, fasilitas selain gaji, notice period/earliest start date, relasi karyawan, checkbox kualifikasi).
 4. **🧪 Sandbox Test Bench (`demo/test-form.html`)**:
    - Halaman demo lokal siap pakai untuk menguji autofill pada berbagai variasi input (teks, dropdown, radio, textarea, checkbox).
 
