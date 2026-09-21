@@ -131,14 +131,15 @@
       if (!el) continue;
 
       const tag = el.tagName.toLowerCase();
+      const role = (el.getAttribute('role') || '').toLowerCase();
       const type = (el.getAttribute('type') || '').toLowerCase();
 
       try {
         if (tag === 'select') {
           setSelectValue(el, value);
-        } else if (type === 'radio') {
+        } else if (type === 'radio' || role === 'radio') {
           setRadioValue(el, value);
-        } else if (type === 'checkbox') {
+        } else if (type === 'checkbox' || role === 'checkbox') {
           setCheckboxValue(el, value);
         } else if (el.isContentEditable) {
           el.innerText = value;
@@ -173,6 +174,10 @@
       el.value = value;
     }
 
+    // Kompatibilitas Google Forms agar floating label otomatis terangkat
+    el.setAttribute('data-initial-value', value);
+    el.setAttribute('badinput', 'false');
+
     dispatchInputEvents(el);
   }
 
@@ -204,32 +209,47 @@
     const radioName = el.getAttribute('name');
 
     if (radioName) {
-      const radioGroup = document.querySelectorAll(`input[type="radio"][name="${CSS.escape(radioName)}"]`);
+      const radioGroup = document.querySelectorAll(`input[type="radio"][name="${CSS.escape(radioName)}"], [role="radio"][name="${CSS.escape(radioName)}"]`);
       for (const radio of radioGroup) {
-        const val = radio.value.toLowerCase().trim();
-        const label = window.AIFormExtractor?.computeLabel(radio)?.toLowerCase() || '';
+        const val = (radio.value || radio.getAttribute('data-value') || '').toLowerCase().trim();
+        const label = (window.AIFormExtractor?.computeLabel(radio) || radio.getAttribute('aria-label') || '').toLowerCase();
 
         if (val === targetStr || label.includes(targetStr) || targetStr.includes(label)) {
-          radio.checked = true;
+          if (radio.tagName.toLowerCase() === 'input') {
+            radio.checked = true;
+          }
+          radio.click();
           dispatchInputEvents(radio);
           break;
         }
       }
     } else {
-      el.checked = true;
+      if (el.tagName.toLowerCase() === 'input') {
+        el.checked = true;
+      }
+      el.click();
       dispatchInputEvents(el);
     }
   }
 
   function setCheckboxValue(el, targetValue) {
     const val = String(targetValue).toLowerCase().trim();
-    el.checked = val === 'true' || val === 'yes' || val === '1' || val === 'ya';
+    const shouldCheck = val === 'true' || val === 'yes' || val === '1' || val === 'ya' || val === 'bersedia';
+    if (el.tagName.toLowerCase() === 'input') {
+      el.checked = shouldCheck;
+    }
+    if (shouldCheck) {
+      el.click();
+    }
     dispatchInputEvents(el);
   }
 
   function dispatchInputEvents(el) {
+    el.dispatchEvent(new Event('focus', { bubbles: true }));
     el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
     el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+    el.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' }));
+    el.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, cancelable: true, key: ' ' }));
     el.dispatchEvent(new Event('blur', { bubbles: true, cancelable: true }));
   }
 
