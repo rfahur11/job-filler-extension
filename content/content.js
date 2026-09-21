@@ -104,9 +104,9 @@
 
           // 4. Injeksi nilai yang dikembalikan oleh AI ke elemen DOM
           const mapping = response.data;
-          const filledCount = applyValuesToForm(mapping);
-
-          showToast(`✨ Sukses! ${filledCount} kolom terisi dengan jawaban terpersonalisasi. Silakan tinjau sebelum submit.`, 'success');
+          applyValuesToForm(mapping).then(filledCount => {
+            showToast(`✨ Sukses! ${filledCount} kolom terisi dengan jawaban terpersonalisasi. Silakan tinjau sebelum submit.`, 'success');
+          });
         }
       );
     } catch (err) {
@@ -119,14 +119,18 @@
   /**
    * Menginjeksikan nilai ke elemen DOM dengan event dispatch lengkap (kompatibel React/Vue)
    */
-  function applyValuesToForm(fieldMapping) {
+  /**
+   * Menginjeksikan nilai ke elemen DOM secara sequential dengan jeda kecil
+   * agar Google Forms punya waktu settle antara setiap re-render floating label.
+   * Mengembalikan Promise<number> (jumlah field yang berhasil diisi).
+   */
+  async function applyValuesToForm(fieldMapping) {
     if (!fieldMapping || typeof fieldMapping !== 'object') return 0;
 
     let filledCount = 0;
+    const entries = Object.entries(fieldMapping).filter(([, v]) => v !== undefined && v !== null && v !== '');
 
-    for (const [fieldId, value] of Object.entries(fieldMapping)) {
-      if (value === undefined || value === null || value === '') continue;
-
+    for (const [fieldId, value] of entries) {
       const el = document.querySelector(`[data-ai-field-id="${fieldId}"]`);
       if (!el) continue;
 
@@ -142,22 +146,26 @@
         } else if (type === 'checkbox' || role === 'checkbox') {
           setCheckboxValue(el, value);
         } else if (el.isContentEditable) {
+          el.focus();
           el.innerText = value;
           dispatchInputEvents(el);
+          el.blur();
         } else {
           setInputValue(el, value);
         }
 
-        // Tambahkan efek visual highlight hijau
+        // Efek visual highlight hijau
         el.classList.add('ai-field-filled-highlight');
-        setTimeout(() => {
-          el.classList.remove('ai-field-filled-highlight');
-        }, 3500);
+        setTimeout(() => el.classList.remove('ai-field-filled-highlight'), 3500);
 
         filledCount++;
       } catch (err) {
         console.warn(`Gagal mengisi field ${fieldId}:`, err);
       }
+
+      // Beri jeda 120ms antar field agar Google Forms selesai re-render floating label
+      // sebelum kita pindah ke field berikutnya (mencegah overlap layout)
+      await new Promise(resolve => setTimeout(resolve, 120));
     }
 
     return filledCount;
@@ -168,17 +176,22 @@
     const proto = isTextarea ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
     const valueSetter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
 
+    // 1. Focus dulu agar Google Forms floating label terangkat dengan benar
+    el.focus();
+
+    // 2. Set value via native setter agar React/Angular framework mendeteksinya
     if (valueSetter) {
       valueSetter.call(el, value);
     } else {
       el.value = value;
     }
 
-    // Kompatibilitas Google Forms agar floating label otomatis terangkat
-    el.setAttribute('data-initial-value', value);
-    el.setAttribute('badinput', 'false');
-
+    // 3. Dispatch hanya events yang diperlukan (tanpa keydown/keyup agar tidak
+    //    menyebabkan Google Forms memproses keystroke palsu yang merusak layout)
     dispatchInputEvents(el);
+
+    // 4. Blur untuk menyelesaikan siklus floating label
+    el.blur();
   }
 
   function setSelectValue(el, targetValue) {
@@ -245,12 +258,11 @@
   }
 
   function dispatchInputEvents(el) {
-    el.dispatchEvent(new Event('focus', { bubbles: true }));
-    el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+    // Gunakan InputEvent (bukan generic Event) agar lebih akurat disimulasikan sebagai user input
+    // Hapus keydown/keyup dispatch — event tersebut menyebabkan Google Forms memproses
+    // "spasi" sebagai keystroke nyata, yang memicu re-render floating label secara berantakan.
+    el.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: true, data: el.value || '' }));
     el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
-    el.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' }));
-    el.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, cancelable: true, key: ' ' }));
-    el.dispatchEvent(new Event('blur', { bubbles: true, cancelable: true }));
   }
 
   function resetButton(btn, btnText) {
