@@ -67,19 +67,19 @@
 
     try {
       // 1. Ubah state tombol menjadi loading
-      btn.classList.add('loading');
-      btnText.innerText = 'Menganalisis Loker & CV...';
+      if (btn) btn.classList.add('loading');
+      if (btnText) btnText.innerText = 'Menganalisis Loker & CV...';
 
       // 2. Ekstrak seluruh field form + Job Description di halaman
       const extracted = window.AIFormExtractor.extractFormFields();
 
       if (!extracted.fields || extracted.fields.length === 0) {
-        showToast('Tidak ada kolom form aktif yang terdeteksi di halaman ini.', 'error');
+        showToast('Tidak ada kolom form aktif yang terdeteksi. Jika form ada di dalam tombol "Apply/Lamar", silakan buka form terlebih dahulu.', 'error');
         resetButton(btn, btnText);
         return;
       }
 
-      btnText.innerText = `Menyusun Jawaban (${extracted.fields.length} Kolom)...`;
+      if (btnText) btnText.innerText = `Menyusun Jawaban (${extracted.fields.length} Kolom)...`;
 
       // 3. Kirim ke Background Service Worker untuk diproses AI Deep Reasoning
       chrome.runtime.sendMessage(
@@ -90,12 +90,13 @@
           jobContext: extracted.jobContext
         },
         response => {
-          resetButton(btn, btnText);
-
           if (chrome.runtime.lastError) {
+            resetButton(btn, btnText);
             showToast(`Gagal: ${chrome.runtime.lastError.message}`, 'error');
             return;
           }
+
+          resetButton(btn, btnText);
 
           if (!response || !response.success) {
             showToast(response?.error || 'Gagal memproses form dengan AI.', 'error');
@@ -117,22 +118,39 @@
   }
 
   /**
-   * Menginjeksikan nilai ke elemen DOM dengan event dispatch lengkap (kompatibel React/Vue)
+   * Menginjeksikan nilai ke elemen DOM dengan event dispatch lengkap (kompatibel React/Vue/Angular/WordPress)
    */
   function applyValuesToForm(fieldMapping) {
-    if (!fieldMapping || typeof fieldMapping !== 'object') return 0;
+    if (!fieldMapping) return 0;
+
+    let mapping = fieldMapping;
+    if (mapping.fields && typeof mapping.fields === 'object' && !Array.isArray(mapping.fields)) {
+      mapping = mapping.fields;
+    }
+    if (typeof mapping !== 'object') return 0;
 
     let filledCount = 0;
 
-    for (const [fieldId, value] of Object.entries(fieldMapping)) {
+    for (const [fieldId, value] of Object.entries(mapping)) {
       if (value === undefined || value === null || value === '') continue;
 
-      const el = document.querySelector(`[data-ai-field-id="${fieldId}"]`);
+      let el = null;
+      try {
+        el = document.querySelector(`[data-ai-field-id="${CSS.escape(fieldId)}"]`) ||
+             document.querySelector(`[data-ai-field-id="${fieldId}"]`);
+      } catch (e) {
+        el = document.querySelector(`[data-ai-field-id="${fieldId}"]`);
+      }
       if (!el) continue;
 
-      const tag = el.tagName.toLowerCase();
-      const role = (el.getAttribute('role') || '').toLowerCase();
-      const type = (el.getAttribute('type') || '').toLowerCase();
+      const tag = el.tagName ? el.tagName.toLowerCase() : 'input';
+      const role = (el.getAttribute && el.getAttribute('role') || '').toLowerCase();
+      const type = (el.getAttribute && el.getAttribute('type') || (tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : 'text')).toLowerCase();
+
+      // Abaikan input tipe file karena pembatasan keamanan browser
+      if (type === 'file' || (el.type && el.type.toLowerCase() === 'file')) {
+        continue;
+      }
 
       try {
         if (tag === 'select') {
@@ -142,17 +160,21 @@
         } else if (type === 'checkbox' || role === 'checkbox') {
           setCheckboxValue(el, value);
         } else if (el.isContentEditable) {
-          el.innerText = value;
+          el.innerText = String(value);
           dispatchInputEvents(el);
         } else {
           setInputValue(el, value);
         }
 
         // Tambahkan efek visual highlight hijau
-        el.classList.add('ai-field-filled-highlight');
-        setTimeout(() => {
-          el.classList.remove('ai-field-filled-highlight');
-        }, 3500);
+        if (el.classList) {
+          el.classList.add('ai-field-filled-highlight');
+          setTimeout(() => {
+            try {
+              el.classList.remove('ai-field-filled-highlight');
+            } catch (e) {}
+          }, 3500);
+        }
 
         filledCount++;
       } catch (err) {
@@ -164,31 +186,58 @@
   }
 
   function setInputValue(el, value) {
-    const isTextarea = el.tagName.toLowerCase() === 'textarea';
-    const proto = isTextarea ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
-    const valueSetter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+    if (!el) return;
+    const type = (el.getAttribute && el.getAttribute('type') || (el.type || '')).toLowerCase();
+    if (type === 'file') return;
 
-    if (valueSetter) {
-      valueSetter.call(el, value);
-    } else {
-      el.value = value;
+    try {
+      const valStr = String(value);
+      const isTextarea = el.tagName && el.tagName.toLowerCase() === 'textarea';
+      const proto = isTextarea ? window.HTMLTextAreaElement?.prototype : window.HTMLInputElement?.prototype;
+      const valueSetter = proto ? Object.getOwnPropertyDescriptor(proto, 'value')?.set : null;
+
+      if (valueSetter) {
+        valueSetter.call(el, valStr);
+      } else {
+        el.value = valStr;
+      }
+
+      // Kompatibilitas Google Forms & Modern SPA
+      if (el.setAttribute) {
+        try {
+          el.setAttribute('data-initial-value', valStr);
+          el.setAttribute('badinput', 'false');
+        } catch (e) {}
+      }
+
+      dispatchInputEvents(el);
+    } catch (err) {
+      console.warn('setInputValue fallback:', err);
+      try {
+        el.value = String(value);
+        dispatchInputEvents(el);
+      } catch (e) {}
     }
-
-    // Kompatibilitas Google Forms agar floating label otomatis terangkat
-    el.setAttribute('data-initial-value', value);
-    el.setAttribute('badinput', 'false');
-
-    dispatchInputEvents(el);
   }
 
   function setSelectValue(el, targetValue) {
+    if (!el) return;
+    if (!el.options || el.options.length === 0) {
+      try {
+        el.value = String(targetValue);
+        dispatchInputEvents(el);
+      } catch (e) {}
+      return;
+    }
+
     const targetStr = String(targetValue).toLowerCase().trim();
     let matched = false;
 
     for (let i = 0; i < el.options.length; i++) {
       const opt = el.options[i];
-      const optVal = opt.value.toLowerCase().trim();
-      const optText = opt.text.toLowerCase().trim();
+      if (!opt) continue;
+      const optVal = (opt.value || '').toLowerCase().trim();
+      const optText = (opt.text || '').toLowerCase().trim();
 
       if (optVal === targetStr || optText === targetStr || optText.includes(targetStr) || targetStr.includes(optText)) {
         el.selectedIndex = i;
@@ -198,59 +247,71 @@
     }
 
     if (!matched && el.options.length > 0) {
-      el.value = targetValue;
+      el.value = String(targetValue);
     }
 
     dispatchInputEvents(el);
   }
 
   function setRadioValue(el, targetValue) {
+    if (!el) return;
     const targetStr = String(targetValue).toLowerCase().trim();
-    const radioName = el.getAttribute('name');
+    const radioName = el.getAttribute ? el.getAttribute('name') : null;
 
-    if (radioName) {
-      const radioGroup = document.querySelectorAll(`input[type="radio"][name="${CSS.escape(radioName)}"], [role="radio"][name="${CSS.escape(radioName)}"]`);
-      for (const radio of radioGroup) {
-        const val = (radio.value || radio.getAttribute('data-value') || '').toLowerCase().trim();
-        const label = (window.AIFormExtractor?.computeLabel(radio) || radio.getAttribute('aria-label') || '').toLowerCase();
+    if (radioName && radioName.trim()) {
+      try {
+        const selector = `input[type="radio"][name="${CSS.escape(radioName)}"], [role="radio"][name="${CSS.escape(radioName)}"]`;
+        const radioGroup = document.querySelectorAll(selector);
+        for (const radio of radioGroup) {
+          const val = (radio.value || radio.getAttribute('data-value') || '').toLowerCase().trim();
+          const label = (window.AIFormExtractor?.computeLabel(radio) || radio.getAttribute('aria-label') || '').toLowerCase();
 
-        if (val === targetStr || label.includes(targetStr) || targetStr.includes(label)) {
-          if (radio.tagName.toLowerCase() === 'input') {
-            radio.checked = true;
+          if (val === targetStr || label.includes(targetStr) || targetStr.includes(label)) {
+            if (radio.tagName && radio.tagName.toLowerCase() === 'input') {
+              radio.checked = true;
+            }
+            try { radio.click(); } catch (e) {}
+            dispatchInputEvents(radio);
+            return;
           }
-          radio.click();
-          dispatchInputEvents(radio);
-          break;
         }
-      }
-    } else {
-      if (el.tagName.toLowerCase() === 'input') {
-        el.checked = true;
-      }
-      el.click();
-      dispatchInputEvents(el);
+      } catch (e) {}
     }
+
+    if (el.tagName && el.tagName.toLowerCase() === 'input') {
+      el.checked = true;
+    }
+    try { el.click(); } catch (e) {}
+    dispatchInputEvents(el);
   }
 
   function setCheckboxValue(el, targetValue) {
+    if (!el) return;
     const val = String(targetValue).toLowerCase().trim();
-    const shouldCheck = val === 'true' || val === 'yes' || val === '1' || val === 'ya' || val === 'bersedia';
-    if (el.tagName.toLowerCase() === 'input') {
+    const label = (window.AIFormExtractor?.computeLabel(el) || (el.getAttribute && el.getAttribute('aria-label')) || '').toLowerCase().trim();
+    const shouldCheck = val === 'true' || val === 'yes' || val === '1' || val === 'ya' || val === 'bersedia' || val === 'agree' || val === 'i agree' || (label && (val.includes(label) || label.includes(val)));
+
+    if (el.tagName && el.tagName.toLowerCase() === 'input') {
       el.checked = shouldCheck;
     }
     if (shouldCheck) {
-      el.click();
+      try { el.click(); } catch (e) {}
     }
     dispatchInputEvents(el);
   }
 
   function dispatchInputEvents(el) {
-    el.dispatchEvent(new Event('focus', { bubbles: true }));
-    el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
-    el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
-    el.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' }));
-    el.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, cancelable: true, key: ' ' }));
-    el.dispatchEvent(new Event('blur', { bubbles: true, cancelable: true }));
+    if (!el || !el.dispatchEvent) return;
+    try {
+      el.dispatchEvent(new Event('focus', { bubbles: true }));
+      el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+      el.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: ' ' }));
+      el.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, cancelable: true, key: ' ' }));
+      el.dispatchEvent(new Event('blur', { bubbles: true, cancelable: true }));
+    } catch (err) {
+      console.warn('dispatchInputEvents warning:', err);
+    }
   }
 
   function resetButton(btn, btnText) {

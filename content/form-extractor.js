@@ -12,7 +12,7 @@
     extractFormFields() {
       const candidates = Array.from(
         document.querySelectorAll(
-          'input:not([type="hidden"]):not([type="password"]):not([type="submit"]):not([type="reset"]):not([type="button"]):not([type="image"]), textarea, select, [contenteditable="true"], [role="textbox"], [role="radio"], [role="checkbox"]'
+          'input:not([type="hidden"]):not([type="password"]):not([type="submit"]):not([type="reset"]):not([type="button"]):not([type="image"]):not([type="file"]), textarea, select, [contenteditable="true"], [role="textbox"], [role="radio"], [role="checkbox"]'
         )
       );
 
@@ -27,12 +27,12 @@
         const aiFieldId = `ai-field-${fieldCounter}`;
         el.setAttribute('data-ai-field-id', aiFieldId);
 
-        const tag = el.tagName.toLowerCase();
-        const role = (el.getAttribute('role') || '').toLowerCase();
-        const type = (el.getAttribute('type') || (tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : role === 'radio' ? 'radio' : role === 'checkbox' ? 'checkbox' : 'text')).toLowerCase();
+        const tag = el.tagName ? el.tagName.toLowerCase() : 'input';
+        const role = (el.getAttribute && el.getAttribute('role') || '').toLowerCase();
+        const type = (el.getAttribute && el.getAttribute('type') || (tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : role === 'radio' ? 'radio' : role === 'checkbox' ? 'checkbox' : 'text')).toLowerCase();
         const label = this.computeLabel(el);
-        const name = el.getAttribute('name') || '';
-        const placeholder = el.getAttribute('placeholder') || '';
+        const name = el.getAttribute ? (el.getAttribute('name') || '') : '';
+        const placeholder = el.getAttribute ? (el.getAttribute('placeholder') || '') : '';
 
         // Tentukan apakah field ini adalah pertanyaan esai screening (Bilingual: ID & EN)
         const lLabel = label.toLowerCase();
@@ -198,20 +198,24 @@
       }
 
       // 2. Explicit label for="..."
-      if (el.id) {
-        const explicitLabel = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
-        if (explicitLabel && explicitLabel.innerText.trim()) {
-          const text = this.cleanText(explicitLabel.innerText);
-          if (!this.isGenericLabel(text)) return text;
-        }
+      if (el.id && typeof CSS !== 'undefined' && CSS.escape) {
+        try {
+          const explicitLabel = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+          if (explicitLabel && explicitLabel.innerText.trim()) {
+            const text = this.cleanText(explicitLabel.innerText);
+            if (!this.isGenericLabel(text)) return text;
+          }
+        } catch (e) {}
       }
 
       // 3. Parent label
-      const parentLabel = el.closest('label');
-      if (parentLabel && parentLabel.innerText.trim()) {
-        const text = this.cleanText(parentLabel.innerText);
-        if (!this.isGenericLabel(text)) return text;
-      }
+      try {
+        const parentLabel = el.closest('label');
+        if (parentLabel && parentLabel.innerText.trim()) {
+          const text = this.cleanText(parentLabel.innerText);
+          if (!this.isGenericLabel(text)) return text;
+        }
+      } catch (e) {}
 
       // 4. aria-labelledby (mendukung multiple space-separated IDs seperti di Google Form "i1 i4")
       const ariaLabelledBy = el.getAttribute('aria-labelledby');
