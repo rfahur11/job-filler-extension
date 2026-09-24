@@ -20,9 +20,9 @@
   "links": {
     "linkedin": "https://www.linkedin.com/in/fahrur-rozi-k-336b04164",
     "github": "https://github.com/rfahur11",
-    "portfolio": "https://weboz.my.id",
-    "website": "https://weboz.my.id",
-    "blog": "https://weboz.my.id/blog",
+    "portfolio": "https://fr-portofolio.netlify.app/",
+    "website": "https://fr-portofolio.netlify.app/",
+    "blog": "https://fr-portofolio.netlify.app/blog",
     "twitter": "https://x.com/fahrur_dev"
   },
   "summary": "Fullstack, Backend & Applied AI Engineer dengan ~2.5 tahun pengalaman dalam merancang sistem Hybrid RAG anti-halusinasi (DuckDB & ChromaDB), platform MLOps/Computer Vision real-time (YOLO26 & ONNX FP16), microservice berkinerja tinggi (Go/Fiber), serta aplikasi enterprise POS/ERP (Next.js, Electron). Memiliki rekam jejak terbukti dalam memecahkan kegagalan kritis API rate-limiting, membangun pipeline ingestion asinkronus multi-marketplace, dan mendeploy model AI terapan berlatensi ultra-rendah ke lingkungan produksi.",
@@ -138,7 +138,7 @@
     {
       "name": "LarisAI – Smart POS & AI Stock Prediction Platform",
       "role": "Lead Architect & Developer",
-      "url": "https://weboz.my.id",
+      "url": "https://fr-portofolio.netlify.app/",
       "github": "https://github.com/rfahur11",
       "technologies": "Electron, Next.js, React, TypeScript, Go (Fiber), Python (AI/ML), MongoDB / SQL",
       "description": "Merancang sistem Point of Sale (POS) Smart Cross-Platform (Web & Electron Desktop App) untuk memodernisasi alur kasir dan tata kelola stok UMKM. Mengintegrasikan model prediktif AI/ML untuk peramalan stok berdasarkan analitik penjualan historis dan rekomendasi kampanye pemasaran cerdas otomatis."
@@ -146,7 +146,7 @@
     {
       "name": "Enterprise Resource Planning (ERP) & Data Integration",
       "role": "Fullstack Integration Engineer",
-      "url": "https://weboz.my.id",
+      "url": "https://fr-portofolio.netlify.app/",
       "github": "https://github.com/rfahur11",
       "technologies": "Go (Fiber), Next.js, React, Java, MongoDB, Webhooks, REST API",
       "description": "Mengembangkan modul ERP internal yang mengotomatisasi manajemen inventaris, pelaporan keuangan multi-mata uang, dan gateway Webhook berkinerja tinggi."
@@ -162,10 +162,10 @@
     {
       "name": "Weboz Agency Platform & Caraka Edge ML",
       "role": "Founder & ML Engineer",
-      "url": "https://weboz.my.id",
+      "url": "https://fr-portofolio.netlify.app/",
       "github": "https://github.com/rfahur11/weboz",
       "technologies": "TypeScript, Next.js, Python, TensorFlow/Keras, TFLite, Android",
-      "description": "Mendirikan platform digital agency Next.js (weboz.my.id) dan melatih model CNN dengan akurasi ~93% yang dikuantisasi ke format TFLite untuk eksekusi edge berlatensi rendah di Android."
+      "description": "Mendirikan platform digital agency Next.js (fr-portofolio.netlify.app) dan melatih model CNN dengan akurasi ~93% yang dikuantisasi ke format TFLite untuk eksekusi edge berlatensi rendah di Android."
     }
   ],
   "skills": {
