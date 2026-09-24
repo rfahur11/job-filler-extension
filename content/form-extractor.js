@@ -59,6 +59,8 @@
           lLabel.includes('system you have') || 
           lLabel.includes('motivation');
 
+        const maxLength = this.computeMaxLength(el, label);
+
         const fieldData = {
           id: aiFieldId,
           tag: tag,
@@ -67,6 +69,7 @@
           placeholder: placeholder,
           label: label,
           isEssay: isEssayField,
+          maxLength: maxLength,
           currentValue: el.value || el.innerText || ''
         };
 
@@ -295,6 +298,51 @@
         .replace(/\s{2,}/g, ' ')
         .replace(/[*:]+$/, '')
         .trim();
+    },
+
+    computeMaxLength(el, label) {
+      // 1. Cek atribut HTML maxlength
+      const attrVal = el.getAttribute('maxlength');
+      if (attrVal !== null && attrVal !== undefined && attrVal !== '') {
+        const parsed = parseInt(attrVal, 10);
+        if (!isNaN(parsed) && parsed > 0 && parsed < 50000) {
+          return parsed;
+        }
+      }
+
+      // Cek DOM property el.maxLength (abaikan default -1 atau value > 50000)
+      if (typeof el.maxLength === 'number' && el.maxLength > 0 && el.maxLength < 50000) {
+        return el.maxLength;
+      }
+
+      // 2. Cek petunjuk dari label, placeholder, aria-describedby, atau helper text di sekitarnya
+      const textToScan = [
+        label || '',
+        el.getAttribute('placeholder') || '',
+        el.getAttribute('aria-describedby') ? (document.getElementById(el.getAttribute('aria-describedby'))?.innerText || '') : '',
+        el.closest('.form-group, .field-wrapper, div')?.querySelector('.help-block, .field-hint, .character-count, small, span.hint, .description')?.innerText || ''
+      ].join(' ');
+
+      if (textToScan) {
+        // Regex mencocokkan: "max 150 char", "maksimal 200 karakter", "max 50 words", "limit 100", "maks. 250"
+        const charMatch = textToScan.match(/(?:max(?:imum)?|maks(?:imal)?|limit)\s*:?\s*(\d+)\s*(?:char|karakter|huruf)?/i);
+        if (charMatch && charMatch[1]) {
+          const val = parseInt(charMatch[1], 10);
+          if (!isNaN(val) && val > 0 && val < 50000) {
+            return val;
+          }
+        }
+
+        const wordMatch = textToScan.match(/(?:max(?:imum)?|maks(?:imal)?|limit)\s*:?\s*(\d+)\s*(?:kata|words)/i);
+        if (wordMatch && wordMatch[1]) {
+          const words = parseInt(wordMatch[1], 10);
+          if (!isNaN(words) && words > 0) {
+            return Math.floor(words * 6.5);
+          }
+        }
+      }
+
+      return null;
     }
   };
 })();

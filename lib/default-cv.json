@@ -25,7 +25,7 @@
     "blog": "https://weboz.my.id/blog",
     "twitter": "https://x.com/fahrur_dev"
   },
-  "summary": "Fullstack & Backend Integration Engineer dengan ~2.5 tahun pengalaman dalam merancang sistem POS bertenaga AI, pipeline data ERP yang resilien, layanan backend microservice berkinerja tinggi (Go/Fiber), dan aplikasi cross-platform desktop/web (Electron, Next.js). Memiliki rekam jejak terbukti dalam menyelesaikan kendala kritis rate-limiting API, membangun pipeline asinkronus multi-marketplace, dan mengintegrasikan model Applied Machine Learning/Computer Vision ke dalam sistem perangkat lunak enterprise.",
+  "summary": "Fullstack, Backend & Applied AI Engineer dengan ~2.5 tahun pengalaman dalam merancang sistem Hybrid RAG anti-halusinasi (DuckDB & ChromaDB), platform MLOps/Computer Vision real-time (YOLO26 & ONNX FP16), microservice berkinerja tinggi (Go/Fiber), serta aplikasi enterprise POS/ERP (Next.js, Electron). Memiliki rekam jejak terbukti dalam memecahkan kegagalan kritis API rate-limiting, membangun pipeline ingestion asinkronus multi-marketplace, dan mendeploy model AI terapan berlatensi ultra-rendah ke lingkungan produksi.",
   "experience": [
     {
       "role": "Fullstack Developer",
@@ -120,6 +120,22 @@
   ],
   "projects": [
     {
+      "name": "Marketplace Intelligence System (Hybrid RAG)",
+      "role": "Lead RAG & Data Engineer",
+      "url": "https://huggingface.co/spaces/rfahrur6045/rag-marketplace-intelligence",
+      "github": "https://github.com/rfahur11/rag-marketplace",
+      "technologies": "Python, DuckDB (OLAP Engine), ChromaDB (Vector Store), Gradio 6.x, Google Gemini API (Text-to-SQL & Executive Synthesizer), Pytest, Docker",
+      "description": "Enterprise-grade Executive Assistant & Anti-Hallucination Hybrid RAG untuk analisis performa bisnis e-commerce multi-channel (Tokopedia, Shopee, TikTok Shop, Lazada). Memecahkan LLM numerical hallucinations via arsitektur 2 jalur: jalur Deterministik (DuckDB SQL OLAP engine + Semantic Metric Layer + Autonomous Self-Correction Loop) dan jalur Kualitatif (ChromaDB vector store) dengan 100% test pass evaluation suite."
+    },
+    {
+      "name": "VisionOps Guard – Real-Time Industrial PPE Safety & CVOps Platform",
+      "role": "Lead Computer Vision & MLOps Architect",
+      "url": "https://rfahrur6045-mlops-final-copy.hf.space",
+      "github": "https://github.com/rfahur11/visionops-guard",
+      "technologies": "Python, Ultralytics YOLO26, ONNX Runtime FP16, FastAPI, Streamlit, MLflow, Prometheus, Grafana, Docker, DVC, GitHub Actions CI/CD",
+      "description": "Platform Computer Vision & MLOps enterprise untuk pengawasan keselamatan kerja (APD/K3) industri real-time dengan latensi sub-15ms menggunakan model Ultralytics YOLO26 dikuantisasi ke ONNX FP16 (4.96 MB). Dilengkapi stack observability 5 container (Prometheus, Grafana, MLflow), manajemen data DVC, dan pipeline CI/CD GitHub Actions terotomatisasi."
+    },
+    {
       "name": "LarisAI – Smart POS & AI Stock Prediction Platform",
       "role": "Lead Architect & Developer",
       "url": "https://weboz.my.id",
@@ -153,7 +169,7 @@
     }
   ],
   "skills": {
-    "technical": "Go (Golang), TypeScript, JavaScript, Python, Java, SQL, HTML/CSS, Next.js, React.js, Fiber, Electron, Node.js, Express, MongoDB, PostgreSQL, MySQL, TensorFlow, PyTorch, YOLO, Computer Vision, MLOps, REST APIs, Webhooks, Git, Docker, Excel VBA, MikroTik Network",
+    "technical": "Go (Golang), TypeScript, JavaScript, Python, Java, SQL, HTML/CSS, Next.js, React.js, Fiber, Electron, Node.js, Express, MongoDB, PostgreSQL, MySQL, DuckDB, ChromaDB, Hybrid RAG, Text-to-SQL, TensorFlow, PyTorch, YOLO26, ONNX Runtime FP16, Computer Vision, MLOps, MLflow, Prometheus, Grafana, DVC, FastAPI, Gradio 6.x, REST APIs, Webhooks, Git, Docker, Excel VBA, MikroTik Network",
     "soft": "Problem Solving, Analytical Thinking, System Architecture Design, High-throughput Backend Optimization, Cross-functional Team Collaboration, Agile/Scrum",
     "languages": [
       { "language": "Bahasa Indonesia", "proficiency": "Native / Penutur Asli" },
@@ -176,12 +192,12 @@
     "hasDrivingLicense": "SIM A & SIM C"
   },
   "customAnswers": {
-    "whyJoinUs": "Dengan pengalaman lebih dari 2.5 tahun dalam membangun backend microservice Go/Fiber berkinerja tinggi, arsitektur ERP/POS modern, dan penerapan Applied AI/ML (Computer Vision & predictive stock forecasting), saya sangat antusias untuk berkontribusi langsung dalam meningkatkan skalabilitas, keandalan sistem, dan efisiensi produk di perusahaan Anda.",
-    "strengths": "Keahlian kuat dalam penyelesaian masalah arsitektur kritis (seperti optimasi rate-limiting Shopee API & pipeline asinkronus), penguasaan mendalam ekosistem Go, Next.js, React, serta kemampuan mendeploy solusi AI/ML aplikatif ke lingkungan produksi enterprise.",
+    "whyJoinUs": "Dengan pengalaman lebih dari 2.5 tahun dalam membangun backend microservice Go/Fiber berkinerja tinggi, sistem Hybrid RAG anti-halusinasi berbasis DuckDB & ChromaDB, platform MLOps Computer Vision (YOLO26 & ONNX FP16), serta integrasi ERP/POS enterprise, saya sangat antusias untuk berkontribusi langsung dalam meningkatkan skalabilitas, keandalan sistem, dan inovasi produk berbasis AI di perusahaan Anda.",
+    "strengths": "Keahlian kuat dalam arsitektur backend & Applied AI (seperti optimasi rate-limiting Shopee API, pipeline ingestion asinkronus, sistem Text-to-SQL DuckDB anti-halusinasi, serta deployment ONNX FP16 sub-15ms), penguasaan mendalam ekosistem Go, Python, Next.js, dan MLOps enterprise.",
     "weaknesses": "Terkadang saya sangat teliti pada detail performa dan refactoring kode. Namun, saya mengimbanginya dengan selalu memprioritaskan business value, menerapkan pendekatan MVP iteratif yang terukur, dan disiplin pada sprint timeline.",
-    "challengingProject": "Di PT Bharata International Pharmaceutical, saya menyelesaikan kegagalan kritis rate-limiting Shopee Open API saat kondisi vendor code freeze. Saya merancang ulang pipeline order-ingestion asinkronus dengan retry backoff dan dead-letter queue, berhasil memulihkan stabilitas sinkronisasi 100% tanpa kehilangan data transaksi.",
+    "challengingProject": "Membangun Marketplace Intelligence Hybrid RAG (memecahkan LLM numerical hallucinations pada data keuangan e-commerce multi-channel dengan DuckDB OLAP engine & self-correction loop) serta menyelesaikan kegagalan kritis rate-limiting Shopee Open API di PT Bharata International Pharmaceutical via pipeline ingestion asinkronus dan dead-letter queue.",
     "whyLeaveLastJob": "Ingin memperluas kontribusi teknis pada tantangan rekayasa perangkat lunak skala enterprise yang lebih masif, pengembangan produk AI terapan, dan ekosistem backend berkinerja tinggi.",
     "leadershipExperience": "Berpengalaman memimpin standardisasi kontrak API antar tim vendor, mengelola arsitektur teknis proyek Weboz, serta berkolaborasi lintas divisi dari tim R&D produk hingga tim finansial.",
-    "careerGoals": "Dalam 2-3 tahun ke depan, saya berkomitmen untuk berkembang menjadi Senior Backend & Applied AI Engineer yang memimpin perancangan sistem terdistribusi skala besar serta mengintegrasikan teknologi AI generatif dan predictive ke dalam operasional bisnis inti."
+    "careerGoals": "Dalam 2-3 tahun ke depan, saya berkomitmen untuk berkembang menjadi Lead Applied AI & Systems Architect yang memimpin perancangan sistem terdistribusi skala besar, infrastruktur MLOps enterprise, serta mengintegrasikan LLM & Computer Vision berkinerja tinggi ke dalam produk inti perusahaan."
   }
 }

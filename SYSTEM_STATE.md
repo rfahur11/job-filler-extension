@@ -1,6 +1,6 @@
 # 🧭 System State & Living Context: Universal AI Job Form Filler Extension
 
-> **Terakhir Diperbarui**: 2026-09-13 08:35 WIB  
+> **Terakhir Diperbarui**: 2026-09-24 15:05 WIB  
 > **Status Build**: ✅ Production Ready (Manifest V3 Verified)  
 > **Repository**: [rfahur11/job-filler-extension](https://github.com/rfahur11/job-filler-extension) (Branch `main`)  
 > **Target Platform**: Google Chrome, Microsoft Edge, Brave Browser  
@@ -11,10 +11,11 @@
 
 - **Platform**: Chrome Extension **Manifest V3** (Kompatibel dengan semua Chromium-based browser)
 - **AI Core & Vision**:
-  - **Google Gemini 2.0 / 1.5 Flash Multimodal** (Free Tier via Google AI Studio)
+  - **Google Gemini 3.1 Flash Lite / 3.6 Flash Multimodal** (Free Tier via Google AI Studio)
+  - Auto-fallback cascade model untuk performa danlatensi ultra-cepat
   - Fallback: Local LLM via **Ollama** (`http://localhost:11434`)
 - **DOM Extraction & Optimization**:
-  - **Lightweight DOM Pruning**: Mengekstrak semantic context dari form input (< 350 token per halaman form), menghemat kuota dan mempercepat respon AI.
+  - **Lightweight DOM Pruning & Character Limit Parser**: Mengekstrak semantic context dan batasan `maxlength` dari form input, menghemat token dan mencegah teks terpotong mid-sentence.
   - **Natural Event Dispatcher**: Memicu event JavaScript lengkap (`input`, `change`, `blur`) untuk kompatibilitas form modern berbasis React, Next.js, Vue, dan Angular.
 - **Storage & Security**:
   - `chrome.storage.local` untuk menyimpan data profil CV dan API Key secara lokal di browser (tanpa server perantara).
@@ -33,17 +34,17 @@ job-filler-extension/
 │   ├── popup.css              # Dark-mode glassmorphism styling
 │   └── popup.js               # Handler upload file, parsing CV, dan penyimpanan
 ├── content/
-│   ├── content.js             # Floating action button [⚡ Auto-Fill AI] & DOM injector
+│   ├── content.js             # Floating action button [⚡ Auto-Fill AI], DOM injector & safety truncator
 │   ├── content.css            # Styling widget melayang & animasi green glow effect
-│   └── form-extractor.js      # Parser form cerdas & label semantic extractor
+│   └── form-extractor.js      # Parser form cerdas, label semantic & maxlength constraint extractor
 ├── background/
 │   └── service-worker.js      # Background worker gateway komunikasi ke Google Gemini API
 ├── lib/
-│   ├── ai-engine.js           # Multimodal PDF Parser & Prompt Matching Engine
-│   └── default-cv.json        # Template fallback skema profil CV
+│   ├── ai-engine.js           # Multimodal PDF Parser, MaxLength Constraint Prompt & Matching Engine
+│   └── default-cv.json        # Template fallback skema profil CV (updated dengan RAG & VisionOps)
 ├── demo/
-│   └── test-form.html         # Test sandbox pengujian beragam input form lowongan kerja
-├── fahrur-rozi-cv-database.json # Database profil karir offline
+│   └── test-form.html         # Test sandbox pengujian beragam input form & maxlength constraints
+├── fahrur-rozi-cv-database.json # Database profil karir offline (updated dengan proyek RAG & MLOps terbaru)
 └── SYSTEM_STATE.md            # Living technical context dokumen ini
 ```
 
@@ -53,15 +54,20 @@ job-filler-extension/
 
 1. **📄 1-Click Upload & Parse CV (PDF / TXT)**:
    - Pengguna cukup drag & drop berkas CV PDF ke popup. Gemini Multimodal mengekstrak nama, kontak, ringkasan, keahlian, pengalaman, pendidikan, dan ekspektasi gaji dalam 2–3 detik.
-2. **🌐 Universal Semantic Matching & Google Forms Compatibility**:
+2. **📏 Smart MaxLength Constraint & Sentence Safety Truncation**:
+   - Mengekstraksi atribut `maxlength` dan regex petunjuk batasan karakter (*"max 150 chars"*, *"maksimal 200 karakter"*) dari elemen HTML dan helper text.
+   - Menginstruksikan LLM menyusun jawaban ringkas, padat, berbobot, dan selesai secara utuh di bawah limit karakter.
+   - Dilengkapi fungsi *safety truncation* pada DOM injector untuk mencegah kalimat terpotong menggantung di tengah kata.
+3. **🚀 Flagship Project Context Integration**:
+   - Terintegrasi dengan database proyek terbaru: **Marketplace Intelligence System (Hybrid RAG)** (DuckDB Text-to-SQL + ChromaDB) dan **VisionOps Guard** (YOLO26 & ONNX FP16 real-time PPE MLOps platform).
+4. **🌐 Universal Semantic Matching & Google Forms Compatibility**:
    - Mampu mengenali kolom input di berbagai situs lowongan kerja (*Jobstreet, Glints, LinkedIn, Kalibrr, Greenhouse, Lever, Google Forms*).
-   - Dilengkapi *Anti-Generic Filter* (mengabaikan teks *"Jawaban Anda"* / *"Your answer"* di Google Forms), parsing multi-ID `aria-labelledby`, dan penelusuran kartu pertanyaan (`[role="listitem"]`, `[role="heading"]`).
-3. **✍️ Bilingual (ID & EN) Auto-Essay & Operational Screening Generator**:
+   - Dilengkapi *Anti-Generic Filter*, parsing multi-ID `aria-labelledby`, dan penelusuran kartu pertanyaan (`[role="listitem"]`, `[role="heading"]`).
+5. **✍️ Bilingual (ID & EN) Auto-Essay & Operational Screening Generator**:
    - Deteksi bahasa adaptif per-kolom: Pertanyaan berbahasa Inggris dijawab 100% dalam Bahasa Inggris profesional berstandar ATS (STAR Method), sedangkan pertanyaan berbahasa Indonesia dijawab dalam Bahasa Indonesia formal.
-   - Presisi tinggi pada pertanyaan ketersediaan: Mencegah kekeliruan pemetaan antara *"When is the earliest date you can start?"* (dijawab *"Immediately / As soon as possible"*) dengan total tahun pengalaman (*yearsOfExperience*).
-   - Menghasilkan jawaban kesiapan kerja operasional (ketersediaan shift, fasilitas selain gaji, notice period/earliest start date, relasi karyawan, checkbox kualifikasi).
-4. **🧪 Sandbox Test Bench (`demo/test-form.html`)**:
-   - Halaman demo lokal siap pakai untuk menguji autofill pada berbagai variasi input (teks, dropdown, radio, textarea, checkbox).
+   - Presisi tinggi pada pertanyaan ketersediaan: Mencegah kekeliruan pemetaan antara *"When is the earliest date you can start?"* dengan total tahun pengalaman (*yearsOfExperience*).
+6. **🧪 Sandbox Test Bench (`demo/test-form.html`)**:
+   - Halaman demo lokal siap pakai untuk menguji autofill pada berbagai variasi input (teks, dropdown, radio, textarea, checkbox, dan maxlength inputs).
 
 ---
 
@@ -70,16 +76,3 @@ job-filler-extension/
 - **API Key**: Disimpan aman di `chrome.storage.local` melalui tab **🤖 Setting AI** pada popup ekstensi.
 - **Gratis**: Memanfaatkan free tier Google Gemini API (hingga 15 RPM / 1 juta token gratis harian).
 - Tidak memerlukan file `.env` karena berjalan 100% *client-side* di peramban pengguna.
-
----
-
-## 5. 🚀 Panduan Memasang di Device Baru
-
-1. Clone repository:
-   ```bash
-   git clone https://github.com/rfahur11/job-filler-extension.git
-   ```
-2. Buka browser dan buka alamat `chrome://extensions`.
-3. Aktifkan **Developer mode** di pojok kanan atas.
-4. Klik tombol **Load unpacked** dan pilih folder `job-filler-extension`.
-5. Buka popup ekstensi ➔ Tab **Setting AI** ➔ Masukkan Gemini API Key. Ekstensi langsung aktif!

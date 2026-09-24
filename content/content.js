@@ -171,19 +171,41 @@
     return filledCount;
   }
 
+  function sanitizeValueForMaxLength(el, strVal) {
+    if (typeof strVal !== 'string') return strVal;
+    const maxAttr = el.getAttribute('maxlength');
+    const maxLen = maxAttr ? parseInt(maxAttr, 10) : (el.maxLength > 0 && el.maxLength < 50000 ? el.maxLength : null);
+    
+    if (maxLen && strVal.length > maxLen) {
+      let truncated = strVal.slice(0, maxLen);
+      const lastSpace = truncated.lastIndexOf(' ');
+      if (lastSpace > Math.floor(maxLen * 0.7)) {
+        truncated = truncated.slice(0, lastSpace);
+      }
+      truncated = truncated.replace(/[,;:\-\s]+$/, '');
+      if (!/[.!?]$/.test(truncated)) {
+        truncated += '.';
+      }
+      return truncated;
+    }
+    return strVal;
+  }
+
   function setInputValue(el, value) {
     const isTextarea = el.tagName.toLowerCase() === 'textarea';
     const proto = isTextarea ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
     const valueSetter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+
+    const safeValue = sanitizeValueForMaxLength(el, value);
 
     // 1. Focus dulu agar Google Forms floating label terangkat dengan benar
     el.focus();
 
     // 2. Set value via native setter agar React/Angular framework mendeteksinya
     if (valueSetter) {
-      valueSetter.call(el, value);
+      valueSetter.call(el, safeValue);
     } else {
-      el.value = value;
+      el.value = safeValue;
     }
 
     // 3. Dispatch hanya events yang diperlukan (tanpa keydown/keyup agar tidak
