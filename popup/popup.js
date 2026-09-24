@@ -44,6 +44,7 @@ async function loadStoredData() {
 
     setValue('ai-provider', aiConfig.provider || 'gemini');
     setValue('ai-apiKey', aiConfig.apiKey || '');
+    setValue('ai-groqKey', aiConfig.groqApiKey || '');
     setValue('ai-model', activeModel);
     setValue('ai-endpoint', aiConfig.customEndpoint || 'http://localhost:11434');
     updateProviderVisibility(aiConfig.provider || 'gemini');
@@ -337,10 +338,24 @@ function setupEventListeners() {
     }
   });
 
+  const btnToggleGroqKey = document.getElementById('btn-toggle-groq-key');
+  const groqKeyInput = document.getElementById('ai-groqKey');
+  if (btnToggleGroqKey && groqKeyInput) {
+    btnToggleGroqKey.addEventListener('click', () => {
+      if (groqKeyInput.type === 'password') {
+        groqKeyInput.type = 'text';
+        btnToggleGroqKey.innerText = '🔒';
+      } else {
+        groqKeyInput.type = 'password';
+        btnToggleGroqKey.innerText = '👁️';
+      }
+    });
+  }
+
   const btnSave = document.getElementById('btn-save-all');
   btnSave.addEventListener('click', async () => {
     await saveAllData();
-    showSaveStatus('✅ Semua perubahan database tersimpan!');
+    showSaveStatus('✅ Semua perubahan database & API Key tersimpan!');
   });
 
   const btnQuickFill = document.getElementById('btn-quick-fill-tab');
@@ -420,21 +435,30 @@ function setupEventListeners() {
 
 function updateProviderVisibility(provider) {
   const groupKey = document.getElementById('group-apiKey');
+  const groupGroqKey = document.getElementById('group-groqKey');
   const groupEndpoint = document.getElementById('group-endpoint');
   const modelInput = document.getElementById('ai-model');
 
   if (provider === 'gemini') {
     groupKey.classList.remove('hidden');
+    if (groupGroqKey) groupGroqKey.classList.remove('hidden');
     groupEndpoint.classList.add('hidden');
     if (!modelInput.value || modelInput.value.includes('qwen') || modelInput.value.includes('llama') || modelInput.value.includes('2.0') || modelInput.value.includes('3.6')) {
       modelInput.value = 'gemini-3.1-flash-lite';
     }
+  } else if (provider === 'groq') {
+    groupKey.classList.add('hidden');
+    if (groupGroqKey) groupGroqKey.classList.remove('hidden');
+    groupEndpoint.classList.add('hidden');
+    modelInput.value = 'llama-3.3-70b-versatile';
   } else if (provider === 'ollama') {
     groupKey.classList.add('hidden');
+    if (groupGroqKey) groupGroqKey.classList.add('hidden');
     groupEndpoint.classList.remove('hidden');
     modelInput.value = 'qwen2.5:7b';
   } else if (provider === 'openai_compatible') {
     groupKey.classList.remove('hidden');
+    if (groupGroqKey) groupGroqKey.classList.add('hidden');
     groupEndpoint.classList.remove('hidden');
     modelInput.value = 'google/gemini-flash-1.5';
   }
@@ -444,6 +468,8 @@ function getAIConfigFromForm() {
   return {
     provider: getValue('ai-provider') || 'gemini',
     apiKey: getValue('ai-apiKey'),
+    groqApiKey: getValue('ai-groqKey') || '',
+    groqModel: 'openai/gpt-oss-120b',
     model: getValue('ai-model') || 'gemini-3.1-flash-lite',
     customEndpoint: getValue('ai-endpoint') || 'http://localhost:11434'
   };

@@ -328,9 +328,10 @@
         <div class="input-group">
           <label for="ai-provider">Provider AI</label>
           <select id="ai-provider">
-            <option value="gemini">Google Gemini Flash Lite (Ultra-Fast ~700ms ⭐)</option>
+            <option value="gemini">Google Gemini (dengan Auto-Fallback Groq ⭐)</option>
+            <option value="groq">Groq Cloud (Llama 3.3 70B - Ultra Fast ~300ms ⚡)</option>
             <option value="ollama">Ollama (Local di PC - 100% Offline)</option>
-            <option value="openai_compatible">OpenAI / OpenRouter / Groq</option>
+            <option value="openai_compatible">OpenAI / OpenRouter / Custom</option>
           </select>
         </div>
 
@@ -346,10 +347,22 @@
           <small class="hint">API Key tersimpan aman secara lokal di browser Anda.</small>
         </div>
 
+        <div class="input-group" id="group-groqKey">
+          <div class="label-row">
+            <label for="ai-groqKey">Groq API Key (Auto-Fallback saat Gemini Habis)</label>
+            <a href="https://console.groq.com/keys" target="_blank" class="link-small">Console Groq ↗</a>
+          </div>
+          <div class="input-password-wrapper">
+            <input type="password" id="ai-groqKey" placeholder="gsk_...">
+            <button type="button" id="btn-toggle-groq-key" class="btn-icon">👁️</button>
+          </div>
+          <small class="hint">Otomatis aktif sebagai cadangan tercepat jika kuota Gemini habis.</small>
+        </div>
+
         <div class="input-group" id="group-model">
           <label for="ai-model">Model AI</label>
           <input type="text" id="ai-model" placeholder="gemini-3.1-flash-lite">
-          <small class="hint">Model Aktif: <code>gemini-3.1-flash-lite</code> (Ultra-fast + Deep Reasoning)</small>
+          <small class="hint">Model Utama: <code>gemini-3.1-flash-lite</code> (Fallback: <code>llama-3.3-70b-versatile</code>)</small>
         </div>
 
         <div class="input-group hidden" id="group-endpoint">

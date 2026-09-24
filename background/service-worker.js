@@ -22,22 +22,36 @@ chrome.runtime.onInstalled.addListener(async () => {
     }
   }
 
-  // Cek konfigurasi AI & auto-upgrade model ke varian Flash-Lite ultra cepat
+  // Cek konfigurasi AI & auto-upgrade model ke varian Flash-Lite ultra cepat + Groq Fallback
   const { aiConfig } = await chrome.storage.local.get('aiConfig');
+
   if (!aiConfig) {
     await chrome.storage.local.set({
       aiConfig: {
         provider: 'gemini',
         apiKey: '',
         model: 'gemini-3.1-flash-lite',
+        groqApiKey: '',
+        groqModel: 'openai/gpt-oss-120b',
         customEndpoint: 'http://localhost:11434'
       }
     });
-    console.log('✅ Default AI config initialized with gemini-3.1-flash-lite.');
-  } else if (!aiConfig.model || aiConfig.model.includes('2.0') || aiConfig.model.includes('1.5') || aiConfig.model.includes('3.6') || aiConfig.model === 'gemini-2.5-flash') {
-    aiConfig.model = 'gemini-3.1-flash-lite';
-    await chrome.storage.local.set({ aiConfig });
-    console.log('✅ Auto-upgraded model to gemini-3.1-flash-lite.');
+    console.log('✅ Default AI config initialized.');
+  } else {
+    let updated = false;
+    if (!aiConfig.model || aiConfig.model.includes('2.0') || aiConfig.model.includes('1.5') || aiConfig.model.includes('3.6') || aiConfig.model === 'gemini-2.5-flash') {
+      aiConfig.model = 'gemini-3.1-flash-lite';
+      updated = true;
+    }
+    if (aiConfig.groqApiKey === undefined) {
+      aiConfig.groqApiKey = '';
+      aiConfig.groqModel = 'openai/gpt-oss-120b';
+      updated = true;
+    }
+    if (updated) {
+      await chrome.storage.local.set({ aiConfig });
+      console.log('✅ Auto-updated AI config.');
+    }
   }
 });
 
