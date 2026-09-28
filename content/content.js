@@ -183,6 +183,9 @@
         truncated = truncated.slice(0, lastSpace);
       }
       truncated = truncated.replace(/[,;:\-\s]+$/, '');
+      // Bersihkan kata sambung menggantung di akhir (Indonesia & English)
+      truncated = truncated.replace(/\b(and|or|with|of|for|to|in|at|by|the|a|an|dan|atau|dengan|yang|serta|untuk|di|ke|dari|pada)\s*$/i, '').trim();
+      truncated = truncated.replace(/[,;:\-\s]+$/, '');
       if (!/[.!?]$/.test(truncated)) {
         truncated += '.';
       }

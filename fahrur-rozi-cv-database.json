@@ -189,7 +189,11 @@
     "willingToRelocate": "Yes (Open to Relocation / Jakarta / Luar Kota / Luar Negeri)",
     "yearsOfExperience": "2.5",
     "workAuthorization": "Warga Negara Indonesia (WNI - Tanpa Perlu Sponsor Visa)",
-    "hasDrivingLicense": "SIM A & SIM C"
+    "hasDrivingLicense": "SIM A & SIM C",
+    "deviceHardware": "Laptop Intel Core i7 / AMD Ryzen, RAM 16GB, SSD NVMe 512GB, OS Windows 11 & Ubuntu Linux Dual Boot",
+    "developmentTools": "VS Code, Git/GitHub, Docker, Postman, DBeaver, Chrome DevTools, Terminal / WSL",
+    "typingSpeed": "10FastFingers Bahasa Indonesia: 80 WPM (Akurasi 98%) / English: 75 WPM",
+    "commitmentPeriod": "Minimal 1 - 2 tahun atau jangka panjang (Long-term Full-time Commitment)"
   },
   "customAnswers": {
     "whyJoinUs": "Dengan pengalaman lebih dari 2.5 tahun dalam membangun backend microservice Go/Fiber berkinerja tinggi, sistem Hybrid RAG anti-halusinasi berbasis DuckDB & ChromaDB, platform MLOps Computer Vision (YOLO26 & ONNX FP16), serta integrasi ERP/POS enterprise, saya sangat antusias untuk berkontribusi langsung dalam meningkatkan skalabilitas, keandalan sistem, dan inovasi produk berbasis AI di perusahaan Anda.",
@@ -198,6 +202,9 @@
     "challengingProject": "Membangun Marketplace Intelligence Hybrid RAG (memecahkan LLM numerical hallucinations pada data keuangan e-commerce multi-channel dengan DuckDB OLAP engine & self-correction loop) serta menyelesaikan kegagalan kritis rate-limiting Shopee Open API di PT Bharata International Pharmaceutical via pipeline ingestion asinkronus dan dead-letter queue.",
     "whyLeaveLastJob": "Ingin memperluas kontribusi teknis pada tantangan rekayasa perangkat lunak skala enterprise yang lebih masif, pengembangan produk AI terapan, dan ekosistem backend berkinerja tinggi.",
     "leadershipExperience": "Berpengalaman memimpin standardisasi kontrak API antar tim vendor, mengelola arsitektur teknis proyek Weboz, serta berkolaborasi lintas divisi dari tim R&D produk hingga tim finansial.",
-    "careerGoals": "Dalam 2-3 tahun ke depan, saya berkomitmen untuk berkembang menjadi Lead Applied AI & Systems Architect yang memimpin perancangan sistem terdistribusi skala besar, infrastruktur MLOps enterprise, serta mengintegrasikan LLM & Computer Vision berkinerja tinggi ke dalam produk inti perusahaan."
+    "careerGoals": "Dalam 2-3 tahun ke depan, saya berkomitmen untuk berkembang menjadi Lead Applied AI & Systems Architect yang memimpin perancangan sistem terdistribusi skala besar, infrastruktur MLOps enterprise, serta mengintegrasikan LLM & Computer Vision berkinerja tinggi ke dalam produk inti perusahaan.",
+    "skillsAndDevices": "Skill utama: Go (Fiber), Python, TypeScript, Next.js, React, Docker, SQL & NoSQL. Device & Tools: Laptop RAM 16GB, SSD 512GB, OS Windows 11 & Ubuntu Linux, VS Code, Git, Docker, Postman, DBeaver.",
+    "typingSpeedTest": "Hasil tes 10FastFingers Bahasa Indonesia: 80 WPM (Akurasi 98%) / English: 75 WPM.",
+    "commitmentPeriod": "Jika diterima, saya siap berkomitmen bekerja minimal 1 hingga 2 tahun ke depan dan sangat terbuka untuk komitmen jangka panjang (full-time commitment)."
   }
 }
