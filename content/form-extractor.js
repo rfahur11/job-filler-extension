@@ -271,44 +271,58 @@
 
     /**
      * Mencari pertanyaan yang posisinya paling dekat sebelum elemen input di dalam container
+     * Menggunakan verifikasi visual (jarak koordinat vertikal getBoundingClientRect)
+     * agar tidak pernah salah mengambil elemen dari step lain yang disembunyikan.
      */
     findNearestPrecedingQuestion(el, container) {
       const root = container || el.closest('form, [role="dialog"], [aria-modal="true"], [class*="modal"], [class*="Modal"], [class*="dialog"], main') || document.body;
+      const elRect = el.getBoundingClientRect();
 
       const allNodes = Array.from(root.querySelectorAll('*'));
-      const precedingValid = [];
+      const candidates = [];
 
       for (const node of allNodes) {
-        if (node === el || node.contains(el)) break;
-        // Abaikan container besar yang punya banyak anak (hanya periksa elemen teks/leaf)
-        if (node.childElementCount > 4) continue;
+        if (node === el || node.contains(el)) continue;
+        if (node.childElementCount > 3) continue; // Hanya leaf atau near-leaf element
 
-        if (node.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) {
+        // Pastikan node benar-benar terlihat di layar (bukan step sebelumnya yang di-hide)
+        if (!this.isVisible(node)) continue;
+
+        const nodeRect = node.getBoundingClientRect();
+        if (nodeRect.width === 0 || nodeRect.height === 0) continue;
+
+        // Node harus berada di ATAS elemen input secara visual di layar
+        if (nodeRect.bottom <= elRect.top + 15) {
           const text = this.cleanText(node.innerText);
           if (text && !this.isGenericLabel(text)) {
-            if (precedingValid.length === 0 || precedingValid[precedingValid.length - 1].text !== text) {
-              precedingValid.push({ node, text });
-            }
+            const verticalDistance = elRect.top - nodeRect.bottom;
+            candidates.push({
+              text: text,
+              distance: verticalDistance,
+              node: node
+            });
           }
         }
       }
 
-      // Telusuri dari yang PALING DEKAT dengan el (arah mundur / reverse)
-      for (let i = precedingValid.length - 1; i >= 0; i--) {
-        const item = precedingValid[i];
+      // Urutkan berdasarkan jarak vertikal terdekat ke input (ascending distance)
+      candidates.sort((a, b) => a.distance - b.distance);
+
+      // Cari kandidat terdekat yang merupakan pertanyaan atau label
+      for (const item of candidates) {
         const t = item.text;
         if (
           t.includes('?') ||
           /^\d+[\.\)]/.test(t) ||
-          /(apa|bagaimana|sebutkan|jelaskan|ceritakan|mengapa|kenapa|berapa|model|skill|device|tools|wpm|commit|pengalaman|experience|describe|why|what|how|proyek|project)/i.test(t) ||
-          t.length > 15
+          /(link|github|kaggle|hugging|portofolio|portfolio|apa|bagaimana|sebutkan|jelaskan|ceritakan|mengapa|kenapa|berapa|model|skill|device|tools|wpm|commit|pengalaman|experience|describe|why|what|how|proyek|project)/i.test(t) ||
+          t.length > 8
         ) {
           return t;
         }
       }
 
-      if (precedingValid.length > 0) {
-        return precedingValid[precedingValid.length - 1].text;
+      if (candidates.length > 0) {
+        return candidates[0].text;
       }
 
       return '';
