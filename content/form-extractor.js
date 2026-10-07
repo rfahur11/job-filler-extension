@@ -10,8 +10,29 @@
      * @returns {Object} { fields: Array, pageTitle: String, jobContext: Object }
      */
     extractFormFields() {
+      // 1. Cek apakah ada modal dialog yang aktif di layar (misal Glints modal, Jobstreet pop-up)
+      const modalSelectors = [
+        '[role="dialog"]:not([aria-hidden="true"])',
+        '[aria-modal="true"]:not([aria-hidden="true"])',
+        '.modal.show',
+        '.modal.in',
+        '[class*="modal"][style*="display: block"]',
+        '[class*="Modal"]:not([style*="display: none"])',
+        '[class*="dialog"]:not([style*="display: none"])',
+        '[class*="Dialog"]:not([style*="display: none"])'
+      ];
+
+      let root = document;
+      for (const sel of modalSelectors) {
+        const modal = document.querySelector(sel);
+        if (modal && this.isVisible(modal) && modal.querySelector('input, textarea, select')) {
+          root = modal;
+          break;
+        }
+      }
+
       const candidates = Array.from(
-        document.querySelectorAll(
+        root.querySelectorAll(
           'input:not([type="hidden"]):not([type="password"]):not([type="submit"]):not([type="reset"]):not([type="button"]):not([type="image"]), textarea, select, [contenteditable="true"], [role="textbox"], [role="radio"], [role="checkbox"]'
         )
       );
@@ -299,6 +320,102 @@
         }
       }
 
+    /**
+     * Mencari pertanyaan yang posisinya paling dekat sebelum elemen input di dalam container
+     */
+    findNearestPrecedingQuestion(el, container) {
+      const root = container || el.closest('form, [role="dialog"], [aria-modal="true"], [class*="modal"], [class*="Modal"], [class*="dialog"], main') || document.body;
+
+      const allNodes = Array.from(root.querySelectorAll('*'));
+      const precedingValid = [];
+
+      for (const node of allNodes) {
+        if (node === el || node.contains(el)) break;
+        // Abaikan container besar yang punya banyak anak (hanya periksa elemen teks/leaf)
+        if (node.childElementCount > 4) continue;
+
+        if (node.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) {
+          const text = this.cleanText(node.innerText);
+          if (text && !this.isGenericLabel(text)) {
+            if (precedingValid.length === 0 || precedingValid[precedingValid.length - 1].text !== text) {
+              precedingValid.push({ node, text });
+            }
+          }
+        }
+      }
+
+      // Telusuri dari yang PALING DEKAT dengan el (arah mundur / reverse)
+      for (let i = precedingValid.length - 1; i >= 0; i--) {
+        const item = precedingValid[i];
+        const t = item.text;
+        if (
+          t.includes('?') ||
+          /^\d+[\.\)]/.test(t) ||
+          /(apa|bagaimana|sebutkan|jelaskan|ceritakan|mengapa|kenapa|berapa|model|skill|device|tools|wpm|commit|pengalaman|experience|describe|why|what|how|proyek|project)/i.test(t) ||
+          t.length > 15
+        ) {
+          return t;
+        }
+      }
+
+      if (precedingValid.length > 0) {
+        return precedingValid[precedingValid.length - 1].text;
+      }
+
+      return '';
+    },
+
+    /**
+     * Menemukan label paling deskriptif untuk suatu elemen form
+     */
+    computeLabel(el) {
+      // 1. Khusus Google Forms: Cari elemen heading/pertanyaan di kartu soal terdekat
+      const gFormCard = el.closest('[role="listitem"], .geFormCard, .freebirdFormviewerComponentsQuestionBaseRoot, .Qr7Oae, [jsmodel]');
+      if (gFormCard) {
+        const heading = gFormCard.querySelector('[role="heading"], .M7eF9b, .HoA7ed, .F9N2ud, div[dir="auto"]');
+        if (heading && heading !== el && !heading.contains(el)) {
+          const headingText = this.cleanText(heading.innerText);
+          if (!this.isGenericLabel(headingText)) {
+            return headingText;
+          }
+        }
+      }
+
+      // 2. Explicit label for="..."
+      if (el.id) {
+        const explicitLabel = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+        if (explicitLabel && explicitLabel.innerText.trim()) {
+          const text = this.cleanText(explicitLabel.innerText);
+          if (!this.isGenericLabel(text)) return text;
+        }
+      }
+
+      // 3. Parent label
+      const parentLabel = el.closest('label');
+      if (parentLabel && parentLabel.innerText.trim()) {
+        const text = this.cleanText(parentLabel.innerText);
+        if (!this.isGenericLabel(text)) return text;
+      }
+
+      // 4. aria-labelledby
+      const ariaLabelledBy = el.getAttribute('aria-labelledby');
+      if (ariaLabelledBy) {
+        const ids = ariaLabelledBy.split(/\s+/).filter(Boolean);
+        const labelParts = [];
+        for (const id of ids) {
+          const targetEl = document.getElementById(id);
+          if (targetEl && targetEl.innerText.trim()) {
+            const t = this.cleanText(targetEl.innerText);
+            if (!this.isGenericLabel(t)) {
+              labelParts.push(t);
+            }
+          }
+        }
+        if (labelParts.length > 0) {
+          return labelParts.join(' ');
+        }
+      }
+
       // 5. aria-label (hanya jika bukan placeholder generik)
       const ariaLabel = el.getAttribute('aria-label');
       if (ariaLabel && ariaLabel.trim() && !this.isGenericLabel(ariaLabel)) {
@@ -311,12 +428,17 @@
         return placeholder.trim();
       }
 
-      // 7. Ascending Traversal ke atas (Mendukung Glints Modal, Jobstreet, Greenhouse, Lever, Workday)
-      // Menelusuri seluruh saudara sebelumnya (previous sibling) dari elemen ini dan seluruh leluhurnya
+      // 7. Cari teks pertanyaan terdekat sebelum input di container (Glints, Jobstreet modal, dialog wizard)
+      const modalOrDialog = el.closest('[role="dialog"], [aria-modal="true"], .modal, [class*="modal"], [class*="Modal"], [class*="dialog"], [class*="Dialog"], form, fieldset');
+      const nearestQuestion = this.findNearestPrecedingQuestion(el, modalOrDialog);
+      if (nearestQuestion) {
+        return nearestQuestion;
+      }
+
+      // 8. Ascending Traversal ke atas (fallback)
       let current = el;
       let depth = 0;
-      while (current && current !== document.body && current !== document.documentElement && depth < 8) {
-        // Cek sibling-sibling sebelumnya dari current
+      while (current && current !== document.body && depth < 8) {
         let prev = current.previousElementSibling;
         while (prev) {
           const qText = this.findQuestionInNode(prev);
@@ -325,47 +447,8 @@
           }
           prev = prev.previousElementSibling;
         }
-
-        // Cek apakah di dalam parent container terdekat ada elemen heading/label/pertanyaan SEBELUM el
-        const parent = current.parentElement;
-        if (parent) {
-          const candidateNodes = parent.querySelectorAll(
-            'label, .label, .title, legend, strong, span.field-label, [role="heading"], h2, h3, h4, h5, p, [class*="question"], [class*="prompt"]'
-          );
-          for (const cand of candidateNodes) {
-            if (cand !== el && !cand.contains(el) && !el.contains(cand)) {
-              // Pastikan cand berada sebelum el di dokumen DOM
-              if (cand.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) {
-                const text = this.cleanText(cand.innerText);
-                if (text && !this.isGenericLabel(text) && (text.includes('?') || /^\d+[\.\)]/.test(text) || text.length > 12)) {
-                  return text;
-                }
-              }
-            }
-          }
-        }
-
-        current = parent;
+        current = current.parentElement;
         depth++;
-      }
-
-      // 8. Khusus Modal Dialog / Step Wizard (Glints, Jobstreet modal)
-      // Jika el berada dalam modal/dialog atau step wizard, cari teks pertanyaan di dalam modal
-      const modalOrDialog = el.closest('[role="dialog"], .modal, [class*="modal"], [class*="dialog"], [class*="drawer"], form');
-      if (modalOrDialog) {
-        const modalTexts = modalOrDialog.querySelectorAll('h3, h4, h5, p, div, span, label');
-        for (const node of modalTexts) {
-          if (node !== el && !node.contains(el) && !el.contains(node)) {
-            if (node.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) {
-              const text = this.cleanText(node.innerText);
-              if (text && !this.isGenericLabel(text)) {
-                if (text.includes('?') || /^\d+[\.\)]/.test(text) || text.length > 15) {
-                  return text;
-                }
-              }
-            }
-          }
-        }
       }
 
       const fallbackName = el.getAttribute('name') || el.id || '';

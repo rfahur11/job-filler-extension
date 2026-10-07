@@ -79,7 +79,18 @@
         return;
       }
 
-      btnText.innerText = `Menyusun Jawaban (${extracted.fields.length} Kolom)...`;
+      console.log('🚀 [AI Form Filler] Berhasil memindai kolom formulir:');
+      console.table(extracted.fields.map(f => ({
+        ID: f.id,
+        Tag: f.tag,
+        Label: f.label,
+        MaxLength: f.maxLength || 'None',
+        IsEssay: f.isEssay
+      })));
+
+      const firstQuestion = extracted.fields[0]?.label || 'Formulir';
+      const labelShort = firstQuestion.length > 35 ? firstQuestion.slice(0, 35) + '...' : firstQuestion;
+      btnText.innerText = `Menjawab: "${labelShort}"`;
 
       // 3. Kirim ke Background Service Worker untuk diproses AI Deep Reasoning
       chrome.runtime.sendMessage(
@@ -93,19 +104,22 @@
           resetButton(btn, btnText);
 
           if (chrome.runtime.lastError) {
+            console.error('❌ [AI Form Filler] Runtime Error:', chrome.runtime.lastError);
             showToast(`Gagal: ${chrome.runtime.lastError.message}`, 'error');
             return;
           }
 
           if (!response || !response.success) {
+            console.error('❌ [AI Form Filler] AI Error:', response?.error);
             showToast(response?.error || 'Gagal memproses form dengan AI.', 'error');
             return;
           }
 
           // 4. Injeksi nilai yang dikembalikan oleh AI ke elemen DOM
           const mapping = response.data;
+          console.log('✨ [AI Form Filler] Respon AI diterima:', mapping);
           applyValuesToForm(mapping).then(filledCount => {
-            showToast(`✨ Sukses! ${filledCount} kolom terisi dengan jawaban terpersonalisasi. Silakan tinjau sebelum submit.`, 'success');
+            showToast(`✨ Sukses! ${filledCount} kolom terisi. Silakan tinjau sebelum submit.`, 'success');
           });
         }
       );
