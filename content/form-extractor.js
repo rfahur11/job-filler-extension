@@ -10,6 +10,11 @@
      * @returns {Object} { fields: Array, pageTitle: String, jobContext: Object }
      */
     extractFormFields() {
+      // 0. Bersihkan seluruh data-ai-field-id lama di DOM agar tidak terjadi tabrakan antar-step
+      document.querySelectorAll('[data-ai-field-id]').forEach(node => {
+        node.removeAttribute('data-ai-field-id');
+      });
+
       // 1. Cek apakah ada modal dialog yang aktif di layar (misal Glints modal, Jobstreet pop-up)
       const modalSelectors = [
         '[role="dialog"]:not([aria-hidden="true"])',
@@ -423,9 +428,36 @@
     },
 
     isVisible(el) {
-      if (!el.offsetParent && el.offsetWidth === 0 && el.offsetHeight === 0) return false;
+      if (!el) return false;
+      
+      // 1. Cek style dasar
       const style = window.getComputedStyle(el);
-      return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+      if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+        return false;
+      }
+
+      // 2. Cek dimensi fisik
+      const rect = el.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return false;
+
+      // 3. Pastikan elemen benar-benar berada di dalam layar/viewport saat ini
+      // Slider/carousel Glints menggeser langkah sebelumnya ke luar layar ke kiri (rect.right <= 10)
+      const windowWidth = window.innerWidth || document.documentElement.clientWidth || 1920;
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight || 1080;
+
+      if (rect.right <= 10 || rect.left >= windowWidth - 10) {
+        return false;
+      }
+      if (rect.bottom <= 10 || rect.top >= windowHeight + 1000) {
+        return false;
+      }
+
+      // 4. Tidak boleh berada di dalam kontainer yang tersembunyi
+      if (el.closest('[aria-hidden="true"], [hidden], .hidden, [style*="display: none"]')) {
+        return false;
+      }
+
+      return true;
     },
 
     isSearchOrNavInput(el) {
