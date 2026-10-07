@@ -270,57 +270,6 @@
     },
 
     /**
-     * Menemukan label paling deskriptif untuk suatu elemen form
-     */
-    computeLabel(el) {
-      // 1. Khusus Google Forms: Cari elemen heading/pertanyaan di kartu soal terdekat
-      const gFormCard = el.closest('[role="listitem"], .geFormCard, .freebirdFormviewerComponentsQuestionBaseRoot, .Qr7Oae, [jsmodel]');
-      if (gFormCard) {
-        const heading = gFormCard.querySelector('[role="heading"], .M7eF9b, .HoA7ed, .F9N2ud, div[dir="auto"]');
-        if (heading && heading !== el && !heading.contains(el)) {
-          const headingText = this.cleanText(heading.innerText);
-          if (!this.isGenericLabel(headingText)) {
-            return headingText;
-          }
-        }
-      }
-
-      // 2. Explicit label for="..."
-      if (el.id) {
-        const explicitLabel = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
-        if (explicitLabel && explicitLabel.innerText.trim()) {
-          const text = this.cleanText(explicitLabel.innerText);
-          if (!this.isGenericLabel(text)) return text;
-        }
-      }
-
-      // 3. Parent label
-      const parentLabel = el.closest('label');
-      if (parentLabel && parentLabel.innerText.trim()) {
-        const text = this.cleanText(parentLabel.innerText);
-        if (!this.isGenericLabel(text)) return text;
-      }
-
-      // 4. aria-labelledby (mendukung multiple space-separated IDs seperti di Google Form "i1 i4")
-      const ariaLabelledBy = el.getAttribute('aria-labelledby');
-      if (ariaLabelledBy) {
-        const ids = ariaLabelledBy.split(/\s+/).filter(Boolean);
-        const labelParts = [];
-        for (const id of ids) {
-          const targetEl = document.getElementById(id);
-          if (targetEl && targetEl.innerText.trim()) {
-            const t = this.cleanText(targetEl.innerText);
-            if (!this.isGenericLabel(t)) {
-              labelParts.push(t);
-            }
-          }
-        }
-        if (labelParts.length > 0) {
-          return labelParts.join(' ');
-        }
-      }
-
-    /**
      * Mencari pertanyaan yang posisinya paling dekat sebelum elemen input di dalam container
      */
     findNearestPrecedingQuestion(el, container) {
