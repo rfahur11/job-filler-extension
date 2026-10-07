@@ -159,9 +159,33 @@
     /**
      * Memeriksa apakah teks label hanya berupa placeholder generik (misal "Jawaban Anda" di Google Forms)
      */
+    /**
+     * Memeriksa apakah teks label hanya berupa placeholder generik, counter, tombol, atau stepper
+     */
     isGenericLabel(text) {
       if (!text) return true;
       const clean = text.trim().toLowerCase().replace(/[*:]+$/, '').trim();
+      
+      // 1. Saring karakter counter (misal "491 / 500", "459 / 500", "0/500")
+      if (/^\d+\s*[\/\-]\s*\d+$/.test(clean) || /^\d+\s*\/\s*\d+\s*(karakter|characters)?$/i.test(clean)) {
+        return true;
+      }
+
+      // 2. Saring stepper progress (misal "3/4", "5/6", "step 3 of 4", "langkah 3 dari 4")
+      if (/^(\d+\s*\/\s*\d+|step\s*\d+|langkah\s*\d+|page\s*\d+|halaman\s*\d+)$/i.test(clean)) {
+        return true;
+      }
+
+      // 3. Saring tombol navigasi & aksi
+      if (/^(kembali|selanjutnya|kirim|submit|simpan|batal|lanjut|next|back|save|cancel|tutup|close|apply|lamar|unggah|upload|yes|no)$/i.test(clean)) {
+        return true;
+      }
+
+      // 4. Saring judul form / modal umum (misal "Lamar posisi Programmer", "Lamar posisi AI Engineer")
+      if (/^lamar posisi\s+.+$/i.test(clean) || /^apply for\s+.+$/i.test(clean)) {
+        return true;
+      }
+
       const genericPatterns = [
         'jawaban anda',
         'your answer',
@@ -179,9 +203,49 @@
         'untitled question',
         'pertanyaan tanpa judul',
         'opsi',
-        'option'
+        'option',
+        'answer',
+        'content',
+        'response',
+        'textarea',
+        'input'
       ];
       return genericPatterns.includes(clean) || clean.length <= 1;
+    },
+
+    /**
+     * Mencari teks pertanyaan di dalam sebuah node atau anak-anaknya
+     */
+    findQuestionInNode(node) {
+      if (!node || node.nodeType !== Node.ELEMENT_NODE) return '';
+
+      // Abaikan tag script, style, atau widget ekstensi
+      if (['SCRIPT', 'STYLE', 'NOSCRIPT', 'SVG'].includes(node.tagName) || node.id === 'ai-job-filler-widget') {
+        return '';
+      }
+
+      // 1. Prioritaskan elemen yang secara eksplisit merupakan heading atau paragraf pertanyaan
+      const questionEls = node.querySelectorAll(
+        'label, h1, h2, h3, h4, h5, h6, [role="heading"], p, strong, [class*="question"], [class*="prompt"], [class*="label"], [class*="title"]'
+      );
+      for (const qEl of questionEls) {
+        const text = this.cleanText(qEl.innerText);
+        if (text && !this.isGenericLabel(text)) {
+          if (text.includes('?') || /^\d+[\.\)]/.test(text) || text.length > 12) {
+            return text;
+          }
+        }
+      }
+
+      // 2. Jika node itu sendiri memiliki teks langsung yang bermakna
+      const directText = this.cleanText(node.innerText);
+      if (directText && !this.isGenericLabel(directText)) {
+        if (directText.includes('?') || /^\d+[\.\)]/.test(directText) || directText.length > 12) {
+          return directText;
+        }
+      }
+
+      return '';
     },
 
     /**
@@ -247,27 +311,69 @@
         return placeholder.trim();
       }
 
-      // 7. Kontainer umum (.form-group, .field-wrapper, fieldset, dll)
-      const container = el.closest('.form-group, .form-control-wrapper, .field-wrapper, .input-container, fieldset, tr, [role="listitem"], .Qr7Oae, div');
-      if (container) {
-        const heading = container.querySelector('label, .label, .title, legend, strong, span.field-label, [role="heading"], h3, h4, h5, p');
-        if (heading && heading !== el && !heading.contains(el) && heading.innerText.trim()) {
-          const text = this.cleanText(heading.innerText);
-          if (!this.isGenericLabel(text)) return text;
+      // 7. Ascending Traversal ke atas (Mendukung Glints Modal, Jobstreet, Greenhouse, Lever, Workday)
+      // Menelusuri seluruh saudara sebelumnya (previous sibling) dari elemen ini dan seluruh leluhurnya
+      let current = el;
+      let depth = 0;
+      while (current && current !== document.body && current !== document.documentElement && depth < 8) {
+        // Cek sibling-sibling sebelumnya dari current
+        let prev = current.previousElementSibling;
+        while (prev) {
+          const qText = this.findQuestionInNode(prev);
+          if (qText && !this.isGenericLabel(qText)) {
+            return qText;
+          }
+          prev = prev.previousElementSibling;
+        }
+
+        // Cek apakah di dalam parent container terdekat ada elemen heading/label/pertanyaan SEBELUM el
+        const parent = current.parentElement;
+        if (parent) {
+          const candidateNodes = parent.querySelectorAll(
+            'label, .label, .title, legend, strong, span.field-label, [role="heading"], h2, h3, h4, h5, p, [class*="question"], [class*="prompt"]'
+          );
+          for (const cand of candidateNodes) {
+            if (cand !== el && !cand.contains(el) && !el.contains(cand)) {
+              // Pastikan cand berada sebelum el di dokumen DOM
+              if (cand.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) {
+                const text = this.cleanText(cand.innerText);
+                if (text && !this.isGenericLabel(text) && (text.includes('?') || /^\d+[\.\)]/.test(text) || text.length > 12)) {
+                  return text;
+                }
+              }
+            }
+          }
+        }
+
+        current = parent;
+        depth++;
+      }
+
+      // 8. Khusus Modal Dialog / Step Wizard (Glints, Jobstreet modal)
+      // Jika el berada dalam modal/dialog atau step wizard, cari teks pertanyaan di dalam modal
+      const modalOrDialog = el.closest('[role="dialog"], .modal, [class*="modal"], [class*="dialog"], [class*="drawer"], form');
+      if (modalOrDialog) {
+        const modalTexts = modalOrDialog.querySelectorAll('h3, h4, h5, p, div, span, label');
+        for (const node of modalTexts) {
+          if (node !== el && !node.contains(el) && !el.contains(node)) {
+            if (node.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) {
+              const text = this.cleanText(node.innerText);
+              if (text && !this.isGenericLabel(text)) {
+                if (text.includes('?') || /^\d+[\.\)]/.test(text) || text.length > 15) {
+                  return text;
+                }
+              }
+            }
+          }
         }
       }
 
-      // 8. Elemen sibling sebelumnya
-      let prev = el.previousElementSibling;
-      while (prev) {
-        if (['LABEL', 'SPAN', 'P', 'DIV', 'H4', 'H3', 'STRONG'].includes(prev.tagName) && prev.innerText.trim()) {
-          const text = this.cleanText(prev.innerText);
-          if (!this.isGenericLabel(text)) return text;
-        }
-        prev = prev.previousElementSibling;
+      const fallbackName = el.getAttribute('name') || el.id || '';
+      if (fallbackName && !this.isGenericLabel(fallbackName)) {
+        return fallbackName;
       }
 
-      return el.getAttribute('name') || el.id || 'Unlabeled Input';
+      return 'Unlabeled Question';
     },
 
     isVisible(el) {

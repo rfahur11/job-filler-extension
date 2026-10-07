@@ -5,21 +5,33 @@
 
 import { AIEngine } from '../lib/ai-engine.js';
 
-// Inisialisasi default state saat ekstensi pertama kali dipasang
+// Inisialisasi default state saat ekstensi pertama kali dipasang atau diperbarui
 chrome.runtime.onInstalled.addListener(async () => {
-  console.log('⚡ AI Job Form Filler Extension installed.');
+  console.log('⚡ AI Job Form Filler Extension installed/updated.');
 
-  // Cek apakah CV sudah tersimpan
-  const { cvData } = await chrome.storage.local.get('cvData');
-  if (!cvData) {
-    try {
-      const response = await fetch(chrome.runtime.getURL('lib/default-cv.json'));
-      const defaultCv = await response.json();
+  // Selaraskan data CV default terbaru ke storage
+  try {
+    const response = await fetch(chrome.runtime.getURL('lib/default-cv.json'));
+    const defaultCv = await response.json();
+    const { cvData: existingCv } = await chrome.storage.local.get('cvData');
+
+    if (!existingCv) {
       await chrome.storage.local.set({ cvData: defaultCv });
       console.log('✅ Default CV data loaded into storage.');
-    } catch (e) {
-      console.error('Gagal memuat default-cv.json:', e);
+    } else {
+      // Auto-merge preferensi dan proyek terbaru jika belum ada
+      const mergedCv = {
+        ...defaultCv,
+        ...existingCv,
+        preferences: { ...defaultCv.preferences, ...(existingCv.preferences || {}) },
+        customAnswers: { ...defaultCv.customAnswers, ...(existingCv.customAnswers || {}) },
+        projects: defaultCv.projects // Selalu sertakan portofolio proyek terbaru
+      };
+      await chrome.storage.local.set({ cvData: mergedCv });
+      console.log('✅ Synced latest projects & preferences to stored CV data.');
     }
+  } catch (e) {
+    console.error('Gagal memuat default-cv.json:', e);
   }
 
   // Cek konfigurasi AI & auto-upgrade model ke varian Flash-Lite ultra cepat + Groq Fallback
