@@ -279,57 +279,40 @@
      * Menggunakan verifikasi visual (jarak koordinat vertikal getBoundingClientRect)
      * agar tidak pernah salah mengambil elemen dari step lain yang disembunyikan.
      */
-    findNearestPrecedingQuestion(el, container) {
-      const root = container || el.closest('form, [role="dialog"], [aria-modal="true"], [class*="modal"], [class*="Modal"], [class*="dialog"], main') || document.body;
+    /**
+     * Mencari teks pertanyaan yang posisinya paling dekat sebelum elemen input di dalam container tertentu
+     */
+    findPrecedingTextInContainer(el, container) {
+      if (!container) return '';
       const elRect = el.getBoundingClientRect();
-
-      const allNodes = Array.from(root.querySelectorAll('*'));
+      const allElements = Array.from(container.querySelectorAll('*'));
       const candidates = [];
 
-      for (const node of allNodes) {
-        if (node === el || node.contains(el)) continue;
-        if (node.childElementCount > 3) continue; // Hanya leaf atau near-leaf element
-
-        // Pastikan node benar-benar terlihat di layar (bukan step sebelumnya yang di-hide)
+      for (const node of allElements) {
+        if (node === el || node.contains(el) || el.contains(node)) continue;
         if (!this.isVisible(node)) continue;
 
-        const nodeRect = node.getBoundingClientRect();
-        if (nodeRect.width === 0 || nodeRect.height === 0) continue;
-
-        // Node harus berada di ATAS elemen input secara visual di layar
-        if (nodeRect.bottom <= elRect.top + 15) {
-          const text = this.cleanText(node.innerText);
-          if (text && !this.isGenericLabel(text)) {
-            const verticalDistance = elRect.top - nodeRect.bottom;
-            candidates.push({
-              text: text,
-              distance: verticalDistance,
-              node: node
-            });
+        // Pastikan node muncul SEBELUM el di DOM
+        if (node.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) {
+          const rect = node.getBoundingClientRect();
+          // Pastikan berada di atas input secara visual (atau sejajar sedikit)
+          if (rect.bottom <= elRect.top + 20 && rect.height > 0) {
+            const text = this.cleanText(node.innerText);
+            if (text && !this.isGenericLabel(text)) {
+              candidates.push({
+                text: text,
+                distance: elRect.top - rect.bottom
+              });
+            }
           }
         }
       }
 
-      // Urutkan berdasarkan jarak vertikal terdekat ke input (ascending distance)
+      // Urutkan berdasarkan jarak vertikal terdekat (jarak terkecil di atas textarea)
       candidates.sort((a, b) => a.distance - b.distance);
-
-      // Cari kandidat terdekat yang merupakan pertanyaan atau label
-      for (const item of candidates) {
-        const t = item.text;
-        if (
-          t.includes('?') ||
-          /^\d+[\.\)]/.test(t) ||
-          /(link|github|kaggle|hugging|portofolio|portfolio|apa|bagaimana|sebutkan|jelaskan|ceritakan|mengapa|kenapa|berapa|model|skill|device|tools|wpm|commit|pengalaman|experience|describe|why|what|how|proyek|project)/i.test(t) ||
-          t.length > 8
-        ) {
-          return t;
-        }
-      }
-
       if (candidates.length > 0) {
         return candidates[0].text;
       }
-
       return '';
     },
 
@@ -384,40 +367,29 @@
         }
       }
 
-      // 5. aria-label (hanya jika bukan placeholder generik)
+      // 5. Penelusuran Parent Berjenjang (Level 1 s/d Level 4) - Sangat ampuh untuk Glints Modal, Jobstreet, React Wizard
+      let parentContainer = el.parentElement;
+      for (let level = 1; level <= 5 && parentContainer && parentContainer !== document.body; level++) {
+        const precedingText = this.findPrecedingTextInContainer(el, parentContainer);
+        if (precedingText) {
+          return precedingText;
+        }
+        parentContainer = parentContainer.parentElement;
+      }
+
+      // 6. aria-label (hanya jika bukan placeholder generik)
       const ariaLabel = el.getAttribute('aria-label');
       if (ariaLabel && ariaLabel.trim() && !this.isGenericLabel(ariaLabel)) {
         return ariaLabel.trim();
       }
 
-      // 6. Placeholder (hanya jika bukan placeholder generik)
+      // 7. Placeholder (hanya jika bukan placeholder generik)
       const placeholder = el.getAttribute('placeholder');
       if (placeholder && placeholder.trim() && !this.isGenericLabel(placeholder)) {
         return placeholder.trim();
       }
 
-      // 7. Cari teks pertanyaan terdekat sebelum input di container (Glints, Jobstreet modal, dialog wizard)
-      const modalOrDialog = el.closest('[role="dialog"], [aria-modal="true"], .modal, [class*="modal"], [class*="Modal"], [class*="dialog"], [class*="Dialog"], form, fieldset');
-      const nearestQuestion = this.findNearestPrecedingQuestion(el, modalOrDialog);
-      if (nearestQuestion) {
-        return nearestQuestion;
-      }
 
-      // 8. Ascending Traversal ke atas (fallback)
-      let current = el;
-      let depth = 0;
-      while (current && current !== document.body && depth < 8) {
-        let prev = current.previousElementSibling;
-        while (prev) {
-          const qText = this.findQuestionInNode(prev);
-          if (qText && !this.isGenericLabel(qText)) {
-            return qText;
-          }
-          prev = prev.previousElementSibling;
-        }
-        current = current.parentElement;
-        depth++;
-      }
 
       const fallbackName = el.getAttribute('name') || el.id || '';
       if (fallbackName && !this.isGenericLabel(fallbackName)) {
